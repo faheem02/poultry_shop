@@ -1,0 +1,284 @@
+$(document).ready(function () {
+
+    let currentRate = 0;
+    let currentChickenTypeId = 0;
+
+    // ---------------------- TWO-WAY CALCULATOR ----------------------
+    const $rateInput    = $('#rate_per_kg');
+    const $weightInput  = $('#weight');
+    const $amountInput  = $('#amount');
+    const $discountInput = $('#discount');
+    const $netTotalEl   = $('#net_total');
+    const $paidInput    = $('#paid_amount');
+    const $balanceEl    = $('#balance');
+
+    function recalculate() {
+        const rate     = parseFloat($rateInput.val()) || 0;
+        const weight   = parseFloat($weightInput.val()) || 0;
+        const amount   = parseFloat($amountInput.val()) || 0;
+        const discount = parseFloat($discountInput.val()) || 0;
+        const paid     = parseFloat($paidInput.val()) || 0;
+
+        let netTotal = 0;
+
+        if (rate > 0 && weight > 0) {
+            netTotal = (weight * rate) - discount;
+        } else if (amount > 0) {
+            netTotal = amount - discount;
+        }
+
+        if (netTotal < 0) netTotal = 0;
+        let balance = netTotal - paid;
+        if (balance < 0) balance = 0;
+
+        $netTotalEl.text(netTotal.toFixed(2));
+        $balanceEl.text(balance.toFixed(2));
+
+        // Update sidebar summary
+        $('#display_rate').text(rate.toFixed(2));
+        $('#display_weight').text(weight.toFixed(3));
+        $('#display_amount').text(netTotal.toFixed(2));
+        $('#display_birds').text(parseInt($('#birds_count').val()) || 0);
+    }
+
+    // Birds count changed -> update sidebar
+    $('#birds_count').on('input', recalculate);
+
+    // Weight changed -> calculate and fill Amount
+    $weightInput.on('input', function () {
+        const rate   = parseFloat($rateInput.val()) || 0;
+        const weight = parseFloat(this.value) || 0;
+        if (rate > 0 && weight > 0) {
+            $amountInput.val((weight * rate).toFixed(2));
+        } else {
+            $amountInput.val('');
+        }
+        recalculate();
+    });
+
+    // Amount changed -> calculate and fill Weight
+    $amountInput.on('input', function () {
+        const rate   = parseFloat($rateInput.val()) || 0;
+        const amount = parseFloat(this.value) || 0;
+        if (rate > 0 && amount > 0) {
+            $weightInput.val((amount / rate).toFixed(3));
+        } else {
+            $weightInput.val('');
+        }
+        recalculate();
+    });
+
+    // Rate changed -> if weight is already filled, recalculate amount;
+    // if amount is filled but no weight, recalculate weight
+    $rateInput.on('input', function () {
+        const rate   = parseFloat(this.value) || 0;
+        const weight = parseFloat($weightInput.val()) || 0;
+        const amount = parseFloat($amountInput.val()) || 0;
+        if (rate > 0 && weight > 0) {
+            $amountInput.val((weight * rate).toFixed(2));
+        } else if (rate > 0 && amount > 0) {
+            $weightInput.val((amount / rate).toFixed(3));
+        }
+        recalculate();
+    });
+
+    $discountInput.on('input', recalculate);
+    $paidInput.on('input', recalculate);
+
+    // ---------------------- LOAD TODAY'S RATE ----------------------
+    function loadTodayRate(chickenTypeId) {
+        if (!chickenTypeId) return;
+        currentChickenTypeId = chickenTypeId;
+        $.ajax({
+            url: '/poultry_shop/pos/pos_ajax.php',
+            method: 'GET',
+            data: { action: 'get_rate', chicken_type_id: chickenTypeId },
+            dataType: 'json',
+            success: function (res) {
+                if (res.success) {
+                    currentRate = parseFloat(res.rate);
+                    $rateInput.val(currentRate.toFixed(2));
+                    // If weight already has a value, recalculate amount
+                    const weight = parseFloat($weightInput.val()) || 0;
+                    const amount = parseFloat($amountInput.val()) || 0;
+                    if (weight > 0) {
+                        $amountInput.val((weight * currentRate).toFixed(2));
+                    } else if (amount > 0) {
+                        $weightInput.val((amount / currentRate).toFixed(3));
+                    }
+                    recalculate();
+                    $('#display_rate').text(currentRate.toFixed(2));
+                } else {
+                    $rateInput.val('');
+                    showError('No rate set for today. Please set rate first.');
+                }
+            }
+        });
+    }
+
+    // On chicken type change
+    $('#chicken_type_id').on('change', function () {
+        const $option = $(this).find(':selected');
+        const birds = $option.data('stock-birds') || 0;
+        const weight = $option.data('stock-weight') || 0;
+        const $info = $('#stockInfo');
+        if ($(this).val()) {
+            $info.text('Available: ' + birds + ' birds / ' + parseFloat(weight).toFixed(2) + ' KG').removeClass('text-danger text-muted');
+            if (weight <= 0) {
+                $info.addClass('text-danger');
+            } else {
+                $info.addClass('text-muted');
+            }
+            $info.show();
+        } else {
+            $info.hide();
+        }
+        loadTodayRate($(this).val());
+    });
+
+    // Validate stock on weight input
+    $weightInput.on('input', function () {
+        const weight = parseFloat(this.value) || 0;
+        const avail = parseFloat($('#chicken_type_id').find(':selected').data('stock-weight')) || 0;
+        const $info = $('#stockInfo');
+        if (weight > 0 && (avail <= 0 || weight > avail)) {
+            $info.addClass('text-danger').removeClass('text-muted');
+            $('#saveSaleBtn').prop('disabled', true);
+        } else {
+            $info.removeClass('text-danger').addClass('text-muted');
+            $('#saveSaleBtn').prop('disabled', false);
+        }
+    });
+
+    // Load rate on page load
+    const initialType = $('#chicken_type_id').val();
+    if (initialType) {
+        loadTodayRate(initialType);
+    }
+
+    // ---------------------- CUSTOMER SEARCH ----------------------
+    $('#customer_search').on('keyup', function () {
+        const q = $(this).val();
+        if (q.length < 1) return;
+        $.ajax({
+            url: '/poultry_shop/pos/pos_ajax.php',
+            method: 'GET',
+            data: { action: 'search_customer', q: q },
+            dataType: 'json',
+            success: function (res) {
+                const $list = $('#customer_results');
+                $list.empty();
+                if (res.length) {
+                    res.forEach(function (c) {
+                        $list.append(
+                            '<a href="#" class="list-group-item list-group-item-action customer-item" data-id="' + c.id + '" data-name="' + c.name + '">' +
+                            c.name + ' (' + c.phone + ')' +
+                            '<span class="float-end text-muted small">Bal: ' + c.balance + '</span>' +
+                            '</a>'
+                        );
+                    });
+                    $list.show();
+                } else {
+                    $list.hide();
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.customer-item', function (e) {
+        e.preventDefault();
+        const id   = $(this).data('id');
+        const name = $(this).data('name');
+        $('#customer_id').val(id);
+        $('#customer_name_display').text(name);
+        $('#customer_results').hide();
+        $('#customer_search').val(name);
+    });
+
+    // ---------------------- SAVE SALE ----------------------
+    $('#saveSaleBtn').on('click', function () {
+        const data = {
+            action: 'save_sale',
+            csrf_token: $('#csrf_token').val(),
+            customer_id: $('#customer_id').val(),
+            chicken_type_id: $('#chicken_type_id').val(),
+            rate_per_kg: $rateInput.val(),
+            birds_count: $('#birds_count').val() || 0,
+            weight: $weightInput.val(),
+            amount: $amountInput.val(),
+            discount: $discountInput.val() || 0,
+            net_total: $netTotalEl.text(),
+            paid_amount: $paidInput.val() || 0,
+            balance: $balanceEl.text(),
+            payment_method: $('#payment_method').val(),
+            sale_date: $('#sale_date').val(),
+        };
+
+        if (!data.chicken_type_id) { showError('Please select chicken type.'); return; }
+        if (!data.weight || parseFloat(data.weight) <= 0) { showError('Please enter weight.'); return; }
+        const availWeight = parseFloat($('#chicken_type_id').find(':selected').data('stock-weight')) || 0;
+        if (availWeight < parseFloat(data.weight)) {
+            showError('Insufficient stock! Available: ' + availWeight.toFixed(2) + ' KG, Required: ' + parseFloat(data.weight).toFixed(2) + ' KG.');
+            return;
+        }
+
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+
+        $.ajax({
+            url: '/poultry_shop/pos/pos_ajax.php',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sale Complete!',
+                        text: 'Invoice: ' + res.invoice_no,
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fas fa-print"></i> Print Invoice',
+                        cancelButtonText: 'New Sale',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.open('/poultry_shop/sales/invoice.php?id=' + res.sale_id, '_blank');
+                        }
+                        resetPOS();
+                    });
+                } else {
+                    showError(res.message || 'Failed to save sale.');
+                }
+            },
+            error: function () {
+                showError('Server error. Please try again.');
+            },
+            complete: function () {
+                btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Invoice');
+            }
+        });
+    });
+
+    // ---------------------- RESET POS ----------------------
+    function resetPOS() {
+        $('#birds_count').val('');
+        $weightInput.val('');
+        $amountInput.val('');
+        $discountInput.val('0');
+        $paidInput.val('0');
+        $netTotalEl.text('0.00');
+        $balanceEl.text('0.00');
+        $('#customer_id').val('');
+        $('#customer_name_display').text('Walk-in Customer');
+        $('#customer_search').val('');
+        $('#payment_method').val('cash');
+        loadTodayRate($('#chicken_type_id').val());
+    }
+
+    // ---------------------- QUICK AMOUNT BUTTONS ----------------------
+    $('.quick-amount').on('click', function () {
+        const val = $(this).data('amount');
+        $paidInput.val(val);
+        recalculate();
+    });
+
+});
