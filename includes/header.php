@@ -168,6 +168,7 @@ date_default_timezone_set('Asia/Karachi');
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'index.php' && strpos($_SERVER['REQUEST_URI'], '/suppliers/') ? 'active' : '' ?>" href="/poultry_shop/suppliers/index.php">View Suppliers</a>
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'ledger.php' && strpos($_SERVER['REQUEST_URI'], '/suppliers/') ? 'active' : '' ?>" href="/poultry_shop/suppliers/ledger.php">Supplier Ledger</a>
+                    <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'index.php' && strpos($_SERVER['REQUEST_URI'], '/supplier_payments/') ? 'active' : '' ?>" href="/poultry_shop/supplier_payments/index.php">Supplier Payments</a>
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'create.php' && strpos($_SERVER['REQUEST_URI'], '/suppliers/') ? 'active' : '' ?>" href="/poultry_shop/suppliers/create.php">Create Supplier</a>
                 </div>
             </div>

@@ -27,7 +27,7 @@ function isSectionActive(string $section): bool {
     $uri = $_SERVER['REQUEST_URI'];
     switch ($section) {
         case 'customers': return strpos($uri, '/customers/') !== false;
-        case 'suppliers': return strpos($uri, '/suppliers/') !== false;
+        case 'suppliers': return strpos($uri, '/suppliers/') !== false || strpos($uri, '/supplier_payments/') !== false;
         case 'finance':   return strpos($uri, '/cash_book') !== false || strpos($uri, '/bank_book') !== false;
         case 'reports':   return strpos($uri, '/reports/') !== false;
         case 'stock':     return strpos($uri, '/stock/') !== false;
@@ -78,6 +78,19 @@ function getCustomerBalance(int $customer_id): float {
     $payments = (float)$stmt->fetch()['total_payments'];
 
     return $opening + $sales - $payments;
+}
+
+function getSupplierBalance(int $supplier_id): float {
+    $pdo = getDB();
+    $stmt = $pdo->prepare("SELECT COALESCE(SUM(total_cost), 0) AS total_purchases FROM purchases WHERE supplier_id = ?");
+    $stmt->execute([$supplier_id]);
+    $purchases = (float)$stmt->fetch()['total_purchases'];
+
+    $stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) AS total_payments FROM supplier_payments WHERE supplier_id = ?");
+    $stmt->execute([$supplier_id]);
+    $payments = (float)$stmt->fetch()['total_payments'];
+
+    return $purchases - $payments;
 }
 
 function todaySalesTotal(): float {

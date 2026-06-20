@@ -25,14 +25,19 @@ $receipts = $pdo->prepare("
 $receipts->execute([$from, $to, $from, $to]);
 $receipts = $receipts->fetchAll();
 
-// Cash payments (expenses)
+// Cash payments (expenses + supplier payments)
 $expenses = $pdo->prepare("
     SELECT expense_date AS date, expense_category AS party, amount, description, 'Expense' AS source
     FROM expenses
     WHERE expense_date BETWEEN ? AND ?
-    ORDER BY expense_date
+    UNION ALL
+    SELECT sp.payment_date AS date, s.name AS party, sp.amount, COALESCE(sp.notes, 'Supplier payment') AS description, 'Supplier Payment' AS source
+    FROM supplier_payments sp
+    JOIN suppliers s ON s.id = sp.supplier_id
+    WHERE sp.payment_method = 'cash' AND sp.payment_date BETWEEN ? AND ?
+    ORDER BY date
 ");
-$expenses->execute([$from, $to]);
+$expenses->execute([$from, $to, $from, $to]);
 $expenses = $expenses->fetchAll();
 
 $total_receipts = array_sum(array_column($receipts, 'amount'));

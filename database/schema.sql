@@ -156,7 +156,27 @@ CREATE TABLE IF NOT EXISTS expenses (
 ) ENGINE=InnoDB;
 
 -- -------------------------------------------
--- 10. stock_ledger
+-- 10. supplier_payments
+-- -------------------------------------------
+CREATE TABLE IF NOT EXISTS supplier_payments (
+  id              INT             AUTO_INCREMENT PRIMARY KEY,
+  supplier_id     INT             NOT NULL,
+  purchase_id     INT             DEFAULT NULL,
+  amount          DECIMAL(12,2)   NOT NULL,
+  payment_method  ENUM('cash','bank') NOT NULL DEFAULT 'cash',
+  notes           TEXT            DEFAULT NULL,
+  payment_date    DATE            NOT NULL,
+  created_by      INT             DEFAULT NULL,
+  created_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE,
+  INDEX idx_sp_date (payment_date),
+  INDEX idx_sp_supplier (supplier_id)
+) ENGINE=InnoDB;
+
+-- -------------------------------------------
+-- 11. stock_ledger
 -- -------------------------------------------
 CREATE TABLE IF NOT EXISTS stock_ledger (
   id                INT             AUTO_INCREMENT PRIMARY KEY,
