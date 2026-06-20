@@ -72,7 +72,7 @@ require_once __DIR__ . '/../includes/header.php';
     </button>
 </div>
 
-<div class="card">
+<div class="card border-start-primary">
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table datatable table-hover mb-0 small">

@@ -24,7 +24,7 @@ $low_stock = $pdo->query("
     SELECT COUNT(*) AS cnt FROM stock_ledger sl
     JOIN chicken_types ct ON ct.id = sl.chicken_type_id
     GROUP BY sl.chicken_type_id
-    HAVING SUM(CASE WHEN transaction_type IN ('opening','purchase') THEN weight_kg ELSE 0 END)
+    HAVING SUM(CASE WHEN transaction_type IN ('opening','purchase','adjustment') THEN weight_kg ELSE 0 END)
          - SUM(CASE WHEN transaction_type = 'sale' THEN weight_kg ELSE 0 END) < 10
     LIMIT 1
 ")->fetch()['cnt'] ?? 0;
@@ -42,7 +42,7 @@ $recent_sales = $pdo->query("
 // Stock summary
 $stock_summary = $pdo->query("
     SELECT ct.name,
-           COALESCE(SUM(CASE WHEN sl.transaction_type IN ('opening','purchase') THEN sl.weight_kg ELSE 0 END), 0)
+           COALESCE(SUM(CASE WHEN sl.transaction_type IN ('opening','purchase','adjustment') THEN sl.weight_kg ELSE 0 END), 0)
          - COALESCE(SUM(CASE WHEN sl.transaction_type = 'sale' THEN sl.weight_kg ELSE 0 END), 0) AS available_kg
     FROM stock_ledger sl
     JOIN chicken_types ct ON ct.id = sl.chicken_type_id

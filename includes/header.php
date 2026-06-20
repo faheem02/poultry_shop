@@ -11,6 +11,77 @@
     <link href="/poultry_shop/assets/css/sb-admin-custom.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <style>
+        /* Sticky Topbar Styles */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            background: white !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1.5rem;
+        }
+        
+        /* Add shadow on scroll */
+        .topbar.scrolled {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
+        }
+        
+        /* Ensure content doesn't hide behind sticky header */
+        #content {
+            padding-top: 0;
+        }
+        
+        /* Smooth transition for the header */
+        .topbar .navbar-brand,
+        .topbar .nav-link,
+        .topbar .dropdown-toggle {
+            transition: all 0.3s ease;
+        }
+        
+        /* Add a subtle background blur effect when scrolling */
+        .topbar.scrolled {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98) !important;
+        }
+        
+        /* Topbar brand text */
+        .topbar .navbar-brand {
+            font-weight: 600;
+            color: #059669;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .topbar {
+                padding: 0.5rem 1rem;
+            }
+            
+            .topbar .d-none.d-sm-inline-block {
+                display: none !important;
+            }
+        }
+        
+        /* Optional: Add a progress bar at top of header */
+        .topbar-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, #059669, #10b981);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        
+        .topbar.scrolled .topbar-progress {
+            transform: scaleX(1);
+        }
+    </style>
 </head>
 <body id="page-top">
 
@@ -19,6 +90,7 @@ $expCust = isSectionActive('customers') ? 'show' : '';
 $expSupp = isSectionActive('suppliers') ? 'show' : '';
 $expFin  = isSectionActive('finance') ? 'show' : '';
 $expReports = isSectionActive('reports') ? 'show' : '';
+$expStock = isSectionActive('stock') ? 'show' : '';
 $collapsed = function($exp) { return $exp ? '' : 'collapsed'; };
 $expanded  = function($exp) { return $exp ? 'true' : 'false'; };
 ?>
@@ -125,11 +197,19 @@ date_default_timezone_set('Asia/Karachi');
                 <span>Expenses</span>
             </a>
         </li>
-        <li class="nav-item <?= navActiveDir('stock') ? 'active' : '' ?>">
-            <a class="nav-link" href="/poultry_shop/stock/index.php">
+        <!-- Stock Accordion -->
+        <li class="nav-item">
+            <a class="nav-link <?= $collapsed($expStock) ?>" href="#" data-bs-toggle="collapse" data-bs-target="#collapseStock" aria-expanded="<?= $expanded($expStock) ?>">
                 <i class="fas fa-fw fa-warehouse"></i>
                 <span>Stock</span>
             </a>
+            <div id="collapseStock" class="collapse <?= $expStock ?>" data-bs-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'summary.php' && strpos($_SERVER['REQUEST_URI'], '/stock/') ? 'active' : '' ?>" href="/poultry_shop/stock/summary.php">Stock Summary</a>
+                    <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'index.php' && strpos($_SERVER['REQUEST_URI'], '/stock/') ? 'active' : '' ?>" href="/poultry_shop/stock/index.php">Stock Ledger</a>
+                    <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'manage.php' && strpos($_SERVER['REQUEST_URI'], '/stock/') ? 'active' : '' ?>" href="/poultry_shop/stock/manage.php">Management</a>
+                </div>
+            </div>
         </li>
 
         <hr class="sidebar-divider">
@@ -179,13 +259,13 @@ date_default_timezone_set('Asia/Karachi');
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
-            <!-- Topbar -->
-            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+            <!-- Topbar - NOW STICKY -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" id="stickyTopbar">
                 <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
                     <i class="fa fa-bars"></i>
                 </button>
 
-               <div class="d-none d-sm-inline-block fw-bold text-muted small">
+                <div class="d-none d-sm-inline-block fw-bold text-muted small">
                     <i class="fas fa-calendar-alt me-1"></i> <?= date('l, d M Y') ?>
                 </div> 
 
@@ -204,6 +284,9 @@ date_default_timezone_set('Asia/Karachi');
                         </div>
                     </li>
                 </ul>
+                
+                <!-- Optional: Progress bar effect -->
+                <div class="topbar-progress"></div>
             </nav>
             <!-- End Topbar -->
 

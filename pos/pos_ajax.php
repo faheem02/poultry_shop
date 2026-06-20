@@ -8,11 +8,11 @@ header('Content-Type: application/json');
 $pdo = getDB();
 $action = $_REQUEST['action'] ?? '';
 
-// ============== GET TODAY'S RATE ==============
+// ============== GET TODAY'S RATE + STOCK ==============
 if ($action === 'get_rate') {
     $chicken_type_id = (int)($_GET['chicken_type_id'] ?? 0);
     if (!$chicken_type_id) {
-        echo json_encode(['success' => false]);
+        echo json_encode(['success' => false, 'debug_type_id' => $chicken_type_id, 'debug_get' => $_GET]);
         exit;
     }
 
@@ -24,10 +24,23 @@ if ($action === 'get_rate') {
     $stmt->execute([$chicken_type_id]);
     $rate = $stmt->fetch();
 
+    $stock = availableStock($chicken_type_id);
+
     if ($rate) {
-        echo json_encode(['success' => true, 'rate' => $rate['rate_per_kg']]);
+        echo json_encode([
+            'success' => true,
+            'rate'    => $rate['rate_per_kg'],
+            'birds'   => (int)$stock['birds'],
+            'weight'  => (float)$stock['weight'],
+            'debug_type_id' => $chicken_type_id,
+        ]);
     } else {
-        echo json_encode(['success' => false]);
+        echo json_encode([
+            'success' => false,
+            'birds'   => (int)$stock['birds'],
+            'weight'  => (float)$stock['weight'],
+            'debug_type_id' => $chicken_type_id,
+        ]);
     }
     exit;
 }
@@ -46,7 +59,7 @@ if ($action === 'today_rates') {
 }
 
 // ============== SEARCH CUSTOMER ==============
-if ($action === 'search_customer') {
+if ($action === 'search_customer' || $action === 'search_customers') {
     $q = $_GET['q'] ?? '';
     if (strlen($q) < 1) {
         echo json_encode([]);

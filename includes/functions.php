@@ -30,6 +30,7 @@ function isSectionActive(string $section): bool {
         case 'suppliers': return strpos($uri, '/suppliers/') !== false;
         case 'finance':   return strpos($uri, '/cash_book') !== false || strpos($uri, '/bank_book') !== false;
         case 'reports':   return strpos($uri, '/reports/') !== false;
+        case 'stock':     return strpos($uri, '/stock/') !== false;
         default:           return false;
     }
 }
@@ -113,9 +114,9 @@ function availableStock(int $chicken_type_id): array {
     $pdo = getDB();
     $stmt = $pdo->prepare("
         SELECT
-            COALESCE(SUM(CASE WHEN transaction_type IN ('opening','purchase') THEN birds_count ELSE 0 END), 0)
+            COALESCE(SUM(CASE WHEN transaction_type IN ('opening','purchase','adjustment') THEN birds_count ELSE 0 END), 0)
             - COALESCE(SUM(CASE WHEN transaction_type = 'sale' THEN birds_count ELSE 0 END), 0) AS birds,
-            COALESCE(SUM(CASE WHEN transaction_type IN ('opening','purchase') THEN weight_kg ELSE 0 END), 0)
+            COALESCE(SUM(CASE WHEN transaction_type IN ('opening','purchase','adjustment') THEN weight_kg ELSE 0 END), 0)
             - COALESCE(SUM(CASE WHEN transaction_type = 'sale' THEN weight_kg ELSE 0 END), 0) AS weight
         FROM stock_ledger
         WHERE chicken_type_id = ?

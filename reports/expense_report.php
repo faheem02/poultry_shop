@@ -38,7 +38,7 @@ require_once __DIR__ . '/../includes/header.php';
     <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-coins me-1"></i> Expense Report</h1>
 </div>
 
-<div class="card mb-4">
+<div class="card mb-4 border-start-info">
     <div class="card-body">
         <form method="GET" class="row g-2">
             <div class="col-auto"><input type="date" name="from" class="form-control form-control-sm" value="<?= $from ?>"></div>
@@ -71,13 +71,13 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="row mb-4">
     <div class="col-xl-6 mb-4">
-        <div class="card">
+        <div class="card border-start-warning">
             <div class="card-header">Expense Breakdown</div>
             <div class="card-body"><canvas id="expenseChart" height="250"></canvas></div>
         </div>
     </div>
     <div class="col-xl-6 mb-4">
-        <div class="card">
+        <div class="card border-start-primary">
             <div class="card-header">Expense List</div>
             <div class="card-body p-0">
                 <div class="table-responsive">

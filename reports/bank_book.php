@@ -34,19 +34,19 @@ require_once __DIR__ . '/../includes/header.php';
     <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-university me-1"></i> Bank Book</h1>
 </div>
 
-<div class="card mb-4">
+<div class="card mb-4 border-start-info">
     <div class="card-body">
         <form method="GET" class="row g-2 align-items-end">
             <div class="col-auto">
                 <label class="form-label small">From</label>
-                <input type="date" name="from" class="form-control" value="<?= $from ?>">
+                <input type="date" name="from" class="form-control form-control-sm" value="<?= $from ?>">
             </div>
             <div class="col-auto">
                 <label class="form-label small">To</label>
-                <input type="date" name="to" class="form-control" value="<?= $to ?>">
+                <input type="date" name="to" class="form-control form-control-sm" value="<?= $to ?>">
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-search me-1"></i> Filter</button>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search me-1"></i> Filter</button>
             </div>
         </form>
     </div>
@@ -63,7 +63,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<div class="card">
+<div class="card border-start-primary">
     <div class="card-header">Bank Transactions</div>
     <div class="card-body p-0">
         <div class="table-responsive">

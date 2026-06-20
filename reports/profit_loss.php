@@ -40,7 +40,7 @@ require_once __DIR__ . '/../includes/header.php';
     <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-chart-pie me-1"></i> Profit & Loss Report</h1>
 </div>
 
-<div class="card mb-4">
+<div class="card mb-4 border-start-info">
     <div class="card-body">
         <form method="GET" class="row g-2">
             <div class="col-auto"><input type="date" name="from" class="form-control form-control-sm" value="<?= $from ?>"></div>
@@ -85,14 +85,19 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<table class="table table-bordered">
-    <tr><td class="fw-bold" style="width:200px;">Total Revenue</td><td>Rs. <?= money($revenue) ?></td></tr>
-    <tr><td class="fw-bold">Total Weight Sold</td><td><?= number_format($total_weight, 2) ?> KG</td></tr>
-    <tr><td class="fw-bold">Avg Purchase Rate</td><td>Rs. <?= money($avg_purchase_rate) ?>/KG</td></tr>
-    <tr><td class="fw-bold">Cost of Goods Sold</td><td>Rs. <?= money($cogs) ?></td></tr>
-    <tr><td class="fw-bold">Gross Profit</td><td class="fw-bold <?= $gross_profit >= 0 ? 'text-success' : 'text-danger' ?>">Rs. <?= money($gross_profit) ?></td></tr>
-    <tr><td class="fw-bold">Total Expenses</td><td class="text-warning fw-bold">Rs. <?= money($expenses) ?></td></tr>
-    <tr class="table-active"><td class="fw-bold fs-5">Net Profit</td><td class="fw-bold fs-5 <?= $net_profit >= 0 ? 'text-success' : 'text-danger' ?>">Rs. <?= money($net_profit) ?></td></tr>
-</table>
+<div class="card border-start-primary">
+    <div class="card-header"><i class="fas fa-calculator me-1"></i> Profit & Loss Statement</div>
+    <div class="card-body">
+        <table class="table table-bordered mb-0">
+            <tr><td class="fw-bold" style="width:200px;">Total Revenue</td><td>Rs. <?= money($revenue) ?></td></tr>
+            <tr><td class="fw-bold">Total Weight Sold</td><td><?= number_format($total_weight, 2) ?> KG</td></tr>
+            <tr><td class="fw-bold">Avg Purchase Rate</td><td>Rs. <?= money($avg_purchase_rate) ?>/KG</td></tr>
+            <tr><td class="fw-bold">Cost of Goods Sold</td><td>Rs. <?= money($cogs) ?></td></tr>
+            <tr><td class="fw-bold">Gross Profit</td><td class="fw-bold <?= $gross_profit >= 0 ? 'text-success' : 'text-danger' ?>">Rs. <?= money($gross_profit) ?></td></tr>
+            <tr><td class="fw-bold">Total Expenses</td><td class="text-warning fw-bold">Rs. <?= money($expenses) ?></td></tr>
+            <tr class="table-active"><td class="fw-bold fs-5">Net Profit</td><td class="fw-bold fs-5 <?= $net_profit >= 0 ? 'text-success' : 'text-danger' ?>">Rs. <?= money($net_profit) ?></td></tr>
+        </table>
+    </div>
+</div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

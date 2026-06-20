@@ -56,7 +56,7 @@ require_once __DIR__ . '/../includes/header.php';
     <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-book me-1"></i> Customer Ledger Report</h1>
 </div>
 
-<div class="card mb-4">
+<div class="card mb-4 border-start-info">
     <div class="card-body">
         <form method="GET" class="row g-2">
             <div class="col-auto">
@@ -73,11 +73,11 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <?php if ($customer_id && count($entries)): ?>
-<div class="card">
+<div class="card border-start-primary">
     <div class="card-header fw-bold"><?= htmlspecialchars($customer_name) ?> — Balance: Rs. <?= money($running) ?></div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0 small">
+            <table class="table datatable table-hover mb-0 small">
                 <thead class="table-light">
                     <tr><th>Date</th><th>Particular</th><th class="text-end">Debit</th><th class="text-end">Credit</th><th class="text-end">Balance</th></tr>
                 </thead>

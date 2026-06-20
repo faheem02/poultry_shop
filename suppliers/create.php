@@ -32,7 +32,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card shadow">
+        <div class="card shadow border-start-primary">
             <div class="card-header py-3 d-flex align-items-center">
                 <i class="fas fa-truck fa-2x text-primary me-3"></i>
                 <div>

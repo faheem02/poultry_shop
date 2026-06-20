@@ -96,7 +96,7 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <!-- Filter -->
-<div class="card mb-4">
+<div class="card mb-4 border-start-info">
     <div class="card-body">
         <form method="GET" class="row g-2 align-items-end">
             <div class="col-auto"><input type="date" name="from" class="form-control form-control-sm" value="<?= $from ?>"></div>
@@ -106,7 +106,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<div class="card">
+<div class="card border-start-primary">
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table datatable table-hover mb-0 small">

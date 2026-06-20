@@ -43,7 +43,7 @@ require_once __DIR__ . '/../includes/header.php';
     <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-chart-bar me-1"></i> Daily Sales Report</h1>
 </div>
 
-<div class="card mb-4">
+<div class="card mb-4 border-start-info">
     <div class="card-body">
         <form method="GET" class="row g-2">
             <div class="col-auto"><input type="date" name="from" class="form-control form-control-sm" value="<?= $from ?>"></div>
@@ -90,13 +90,13 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="row mb-4">
     <div class="col-xl-6 mb-4">
-        <div class="card">
+        <div class="card border-start-primary">
             <div class="card-header">Sales Trend</div>
             <div class="card-body"><canvas id="salesChart" height="200"></canvas></div>
         </div>
     </div>
     <div class="col-xl-6 mb-4">
-        <div class="card">
+        <div class="card border-start-success">
             <div class="card-header">Summary by Chicken Type</div>
             <div class="card-body">
                 <?php
@@ -122,7 +122,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<div class="card">
+<div class="card border-start-primary">
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table datatable table-hover mb-0 small">

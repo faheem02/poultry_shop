@@ -52,10 +52,10 @@ require_once __DIR__ . '/../includes/header.php';
     </button>
 </div>
 
-<div class="card">
+<div class="card border-start-primary">
     <div class="card-body">
         <table class="table datatable table-hover">
-            <thead>
+            <thead class="table-light">
                 <tr>
                     <th>#</th>
                     <th>Name</th>

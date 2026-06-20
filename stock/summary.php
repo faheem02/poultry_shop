@@ -4,11 +4,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 
 $pdo = getDB();
-$page_title = 'Stock Management';
-
-$from = $_GET['from'] ?? date('Y-m-01');
-$to   = $_GET['to'] ?? date('Y-m-d');
-$typeFilter = $_GET['type'] ?? '';
+$page_title = 'Stock Summary';
 
 $types = $pdo->query("SELECT id, name FROM chicken_types ORDER BY name")->fetchAll();
 
@@ -45,75 +41,17 @@ $grand['stock_value'] = $grand['avail_weight'] > 0 && $grand['in_weight'] > 0
     ? ($grand['in_amount'] / $grand['in_weight']) * $grand['avail_weight']
     : 0;
 
-// Stock ledger with running balance
-$where = "WHERE 1=1";
-$params = [];
-if ($typeFilter) {
-    $where .= " AND sl.chicken_type_id = ?";
-    $params[] = $typeFilter;
-}
-if ($from) {
-    $where .= " AND sl.transaction_date >= ?";
-    $params[] = $from;
-}
-if ($to) {
-    $where .= " AND sl.transaction_date <= ?";
-    $params[] = $to;
-}
-$stmt = $pdo->prepare("
-    SELECT sl.*, ct.name AS chicken_type_name
-    FROM stock_ledger sl
-    JOIN chicken_types ct ON ct.id = sl.chicken_type_id
-    $where
-    ORDER BY sl.transaction_date DESC, sl.id DESC
-    LIMIT 200
-");
-$stmt->execute($params);
-$ledger = $stmt->fetchAll();
-
-// Running balance — start from stock before filter period, then track each entry
-$bal_birds = 0;
-$bal_weight = 0;
-if ($from) {
-    $balWhere = "WHERE sl.transaction_date < ?";
-    $balParams = [$from];
-    if ($typeFilter) {
-        $balWhere .= " AND sl.chicken_type_id = ?";
-        $balParams[] = $typeFilter;
-    }
-    $stmt = $pdo->prepare("
-        SELECT
-            COALESCE(SUM(CASE WHEN transaction_type IN ('opening','purchase','adjustment') THEN birds_count ELSE 0 END), 0)
-            - COALESCE(SUM(CASE WHEN transaction_type = 'sale' THEN birds_count ELSE 0 END), 0) AS birds,
-            COALESCE(SUM(CASE WHEN transaction_type IN ('opening','purchase','adjustment') THEN weight_kg ELSE 0 END), 0)
-            - COALESCE(SUM(CASE WHEN transaction_type = 'sale' THEN weight_kg ELSE 0 END), 0) AS weight
-        FROM stock_ledger sl $balWhere
-    ");
-    $stmt->execute($balParams);
-    $bal = $stmt->fetch();
-    $bal_birds = (int)$bal['birds'];
-    $bal_weight = (float)$bal['weight'];
-}
-$ledger_asc = array_reverse($ledger);
-$running = [];
-foreach ($ledger_asc as $l) {
-    if (in_array($l['transaction_type'], ['opening','purchase','adjustment'])) {
-        $bal_birds += $l['birds_count'];
-        $bal_weight += $l['weight_kg'];
-    } elseif ($l['transaction_type'] === 'sale') {
-        $bal_birds -= $l['birds_count'];
-        $bal_weight -= $l['weight_kg'];
-    }
-    $running[$l['id']] = ['birds' => $bal_birds, 'weight' => $bal_weight];
-}
-
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">
-        <i class="fas fa-warehouse me-1"></i> Stock Management
+        <i class="fas fa-chart-pie me-1"></i> Stock Summary
     </h1>
+    <div>
+        <a href="index.php" class="btn btn-outline-info btn-sm"><i class="fas fa-list me-1"></i> Ledger</a>
+        <a href="manage.php" class="btn btn-outline-primary btn-sm"><i class="fas fa-plus me-1"></i> Manage Stock</a>
+    </div>
 </div>
 
 <!-- Top Stats Row -->
@@ -215,105 +153,53 @@ require_once __DIR__ . '/../includes/header.php';
     <?php endforeach; ?>
 </div>
 
-<!-- Stock Ledger -->
-<div class="card">
-    <div class="card-header">
-        <div class="row align-items-center">
-            <div class="col"><i class="fas fa-list me-1"></i> Stock Ledger</div>
-            <div class="col-auto">
-                <form method="GET" class="row g-1">
-                    <div class="col-auto">
-                        <select name="type" class="form-select form-select-sm">
-                            <option value="">All Types</option>
-                            <?php foreach ($types as $t): ?>
-                            <option value="<?= $t['id'] ?>" <?= $typeFilter == $t['id'] ? 'selected' : '' ?>><?= htmlspecialchars($t['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-auto"><input type="date" name="from" class="form-control form-control-sm" value="<?= $from ?>"></div>
-                    <div class="col-auto"><input type="date" name="to" class="form-control form-control-sm" value="<?= $to ?>"></div>
-                    <div class="col-auto"><button class="btn btn-primary btn-sm"><i class="fas fa-filter me-1"></i> Filter</button></div>
-                </form>
-            </div>
-        </div>
-    </div>
+<!-- Quick Summary Table -->
+<div class="card border-start-primary">
+    <div class="card-header"><i class="fas fa-table me-1"></i> Stock Summary by Type</div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0 small" id="stockLedgerTable">
+            <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Chicken</th>
-                        <th class="text-end">Birds</th>
-                        <th class="text-end">Weight (KG)</th>
-                        <th class="text-end">Rate/KG</th>
-                        <th class="text-end">Amount</th>
-                        <th class="text-end">Balance Birds</th>
-                        <th class="text-end">Balance KG</th>
-                        <th>Notes</th>
+                        <th>Chicken Type</th>
+                        <th class="text-end">In (Birds)</th>
+                        <th class="text-end">In (KG)</th>
+                        <th class="text-end">Sold (Birds)</th>
+                        <th class="text-end">Sold (KG)</th>
+                        <th class="text-end">Available Birds</th>
+                        <th class="text-end">Available KG</th>
+                        <th class="text-end">Stock Value</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (empty($ledger)): ?>
-                    <tr><td colspan="10" class="text-center text-muted py-4">No stock entries found.</td></tr>
-                    <?php else: ?>
-                    <?php foreach ($ledger as $l):
-                        $isSale = $l['transaction_type'] === 'sale';
-                        $isPurchase = $l['transaction_type'] === 'purchase';
-                        $isOpening = $l['transaction_type'] === 'opening';
-                        $isAdj = $l['transaction_type'] === 'adjustment';
-                        $bal = $running[$l['id']] ?? ['birds' => 0, 'weight' => 0];
-                        $rowClass = $isSale ? 'table-danger' : ($isPurchase ? 'table-success' : ($isOpening ? 'table-info' : ''));
-                    ?>
-                    <tr class="<?= $rowClass ?>">
-                        <td class="fw-bold"><?= date('d M Y', strtotime($l['transaction_date'])) ?></td>
-                        <td>
-                            <span class="badge bg-<?= $isSale ? 'danger' : ($isPurchase || $isOpening ? 'success' : 'secondary') ?>">
-                                <?= $isOpening ? 'Opening' : ucfirst($l['transaction_type']) ?>
-                            </span>
-                        </td>
-                        <td><span class="fw-bold"><?= htmlspecialchars($l['chicken_type_name']) ?></span></td>
-                        <td class="text-end <?= $isSale ? 'text-danger' : 'text-success' ?> fw-bold">
-                            <?= $isSale ? '-' : '+' ?><?= $l['birds_count'] ?: '0' ?>
-                        </td>
-                        <td class="text-end <?= $isSale ? 'text-danger' : 'text-success' ?> fw-bold">
-                            <?= $isSale ? '-' : '+' ?><?= number_format($l['weight_kg'], 2) ?>
-                        </td>
-                        <td class="text-end"><?= $l['rate_per_kg'] ? 'Rs. ' . money($l['rate_per_kg']) : '-' ?></td>
-                        <td class="text-end fw-bold">Rs. <?= money($l['amount']) ?></td>
-                        <td class="text-end fw-bold"><?= number_format($bal['birds']) ?></td>
-                        <td class="text-end fw-bold"><?= number_format($bal['weight'], 2) ?></td>
-                        <td class="text-muted" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?= htmlspecialchars($l['notes'] ?? '-') ?></td>
+                    <?php foreach ($stock_data as $sd): ?>
+                    <tr>
+                        <td class="fw-bold"><?= htmlspecialchars($sd['name']) ?></td>
+                        <td class="text-end text-success"><?= number_format($sd['in_birds']) ?></td>
+                        <td class="text-end text-success"><?= number_format($sd['in_weight'], 1) ?></td>
+                        <td class="text-end text-danger"><?= number_format($sd['out_birds']) ?></td>
+                        <td class="text-end text-danger"><?= number_format($sd['out_weight'], 1) ?></td>
+                        <td class="text-end fw-bold"><?= number_format($sd['avail_birds']) ?></td>
+                        <td class="text-end fw-bold"><?= number_format($sd['avail_weight'], 2) ?></td>
+                        <td class="text-end fw-bold text-primary">Rs. <?= money($sd['stock_value']) ?></td>
                     </tr>
                     <?php endforeach; ?>
-                    <?php endif; ?>
                 </tbody>
+                <tfoot class="table-light fw-bold">
+                    <tr>
+                        <td>TOTAL</td>
+                        <td class="text-end"><?= number_format($grand['in_birds']) ?></td>
+                        <td class="text-end"><?= number_format($grand['in_weight'], 1) ?></td>
+                        <td class="text-end"><?= number_format($grand['out_birds']) ?></td>
+                        <td class="text-end"><?= number_format($grand['out_weight'], 1) ?></td>
+                        <td class="text-end"><?= number_format($grand['avail_birds']) ?></td>
+                        <td class="text-end"><?= number_format($grand['avail_weight'], 2) ?></td>
+                        <td class="text-end text-primary">Rs. <?= money($grand['stock_value']) ?></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
-    <?php if (count($ledger) >= 200): ?>
-    <div class="card-footer text-muted small text-center">Showing last 200 entries. Refine filters for older records.</div>
-    <?php endif; ?>
 </div>
-
-<script>
-$(document).ready(function () {
-    if ($.fn.dataTable) {
-        $('#stockLedgerTable').DataTable({
-            pageLength: 25,
-            order: [],
-            language: {
-                search: '<i class="fas fa-search me-1"></i>',
-                searchPlaceholder: 'Search...',
-                lengthMenu: '_MENU_ per page',
-                info: 'Showing _START_ to _END_ of _TOTAL_',
-            },
-            dom: '<"row align-items-center mb-3"<"col-sm-6"l><"col-sm-6"f>>tip',
-            stateSave: true,
-        });
-    }
-});
-</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

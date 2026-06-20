@@ -31,8 +31,8 @@ $(document).ready(function () {
         let balance = netTotal - paid;
         if (balance < 0) balance = 0;
 
-        $netTotalEl.text(netTotal.toFixed(2));
-        $balanceEl.text(balance.toFixed(2));
+        $netTotalEl.text('Rs. ' + netTotal.toFixed(2));
+        $balanceEl.text('Rs. ' + balance.toFixed(2));
 
         // Update sidebar summary
         $('#display_rate').text(rate.toFixed(2));
@@ -87,7 +87,10 @@ $(document).ready(function () {
 
     // ---------------------- LOAD TODAY'S RATE ----------------------
     function loadTodayRate(chickenTypeId) {
-        if (!chickenTypeId) return;
+        if (!chickenTypeId) {
+            $('#stockInfo').text('').hide();
+            return;
+        }
         currentChickenTypeId = chickenTypeId;
         $.ajax({
             url: '/poultry_shop/pos/pos_ajax.php',
@@ -95,22 +98,40 @@ $(document).ready(function () {
             data: { action: 'get_rate', chicken_type_id: chickenTypeId },
             dataType: 'json',
             success: function (res) {
+                // Always update stock info regardless of rate
+                const birds  = parseInt(res.birds) || 0;
+                const weight = parseFloat(res.weight) || 0;
+                const $info  = $('#stockInfo');
+
+                $info.text('Available: ' + birds + ' birds / ' + weight.toFixed(2) + ' KG');
+                $info.removeClass('text-danger text-muted text-success');
+                if (weight <= 0) {
+                    $info.addClass('text-danger');
+                } else {
+                    $info.addClass('text-success');
+                }
+                $info.show();
+
+                // Store on the selected option so weight validation can read it
+                $('#chicken_type_id').find(':selected')
+                    .data('stock-birds', birds)
+                    .data('stock-weight', weight);
+
                 if (res.success) {
                     currentRate = parseFloat(res.rate);
                     $rateInput.val(currentRate.toFixed(2));
-                    // If weight already has a value, recalculate amount
-                    const weight = parseFloat($weightInput.val()) || 0;
-                    const amount = parseFloat($amountInput.val()) || 0;
-                    if (weight > 0) {
-                        $amountInput.val((weight * currentRate).toFixed(2));
-                    } else if (amount > 0) {
-                        $weightInput.val((amount / currentRate).toFixed(3));
+                    const w = parseFloat($weightInput.val()) || 0;
+                    const a = parseFloat($amountInput.val()) || 0;
+                    if (w > 0) {
+                        $amountInput.val((w * currentRate).toFixed(2));
+                    } else if (a > 0) {
+                        $weightInput.val((a / currentRate).toFixed(3));
                     }
                     recalculate();
                     $('#display_rate').text(currentRate.toFixed(2));
                 } else {
                     $rateInput.val('');
-                    showError('No rate set for today. Please set rate first.');
+                    showError('No rate set for today for this chicken type. Please set a rate first.');
                 }
             }
         });
@@ -118,21 +139,6 @@ $(document).ready(function () {
 
     // On chicken type change
     $('#chicken_type_id').on('change', function () {
-        const $option = $(this).find(':selected');
-        const birds = $option.data('stock-birds') || 0;
-        const weight = $option.data('stock-weight') || 0;
-        const $info = $('#stockInfo');
-        if ($(this).val()) {
-            $info.text('Available: ' + birds + ' birds / ' + parseFloat(weight).toFixed(2) + ' KG').removeClass('text-danger text-muted');
-            if (weight <= 0) {
-                $info.addClass('text-danger');
-            } else {
-                $info.addClass('text-muted');
-            }
-            $info.show();
-        } else {
-            $info.hide();
-        }
         loadTodayRate($(this).val());
     });
 
@@ -207,11 +213,11 @@ $(document).ready(function () {
             weight: $weightInput.val(),
             amount: $amountInput.val(),
             discount: $discountInput.val() || 0,
-            net_total: $netTotalEl.text(),
+            net_total: $netTotalEl.text().replace('Rs. ', '').replace(/,/g, ''),
             paid_amount: $paidInput.val() || 0,
-            balance: $balanceEl.text(),
-            payment_method: $('#payment_method').val(),
-            sale_date: $('#sale_date').val(),
+            balance: $balanceEl.text().replace('Rs. ', '').replace(/,/g, ''),
+            payment_method: $('input[name="payment_method"]:checked').val() || 'cash',
+            sale_date: $('input[name="sale_date"]').val(),
         };
 
         if (!data.chicken_type_id) { showError('Please select chicken type.'); return; }

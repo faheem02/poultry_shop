@@ -30,7 +30,7 @@ require_once __DIR__ . '/../includes/header.php';
     <?php endforeach; ?>
 </div>
 
-<div class="card">
+<div class="card border-start-primary">
     <div class="card-header">Detailed Stock Ledger</div>
     <div class="card-body p-0">
         <div class="table-responsive">
