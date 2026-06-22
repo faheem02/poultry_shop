@@ -80,6 +80,32 @@
         
         .topbar.scrolled .topbar-progress {
             transform: scaleX(1);
+
+        /* Center the sidebar toggle button */
+#accordionSidebar .text-center.d-none.d-md-block {
+    text-align: center !important;
+}
+
+#sidebarToggle {
+    display: inline-block !important;
+    margin: 0 auto !important;
+    float: none !important;
+}
+
+/* Ensure the parent container allows centering */
+.sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Push the toggle to the bottom and center it */
+#accordionSidebar .text-center.d-none.d-md-block {
+    margin-top: auto;
+    padding: 1rem 0;
+    width: 100%;
+}
+
         }
     </style>
 </head>
@@ -154,6 +180,7 @@ date_default_timezone_set('Asia/Karachi');
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'index.php' && strpos($_SERVER['REQUEST_URI'], '/customers/') ? 'active' : '' ?>" href="/poultry_shop/customers/index.php">View Customers</a>
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'ledger.php' && strpos($_SERVER['REQUEST_URI'], '/customers/') ? 'active' : '' ?>" href="/poultry_shop/customers/ledger.php">Customer Ledger</a>
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'create.php' && strpos($_SERVER['REQUEST_URI'], '/customers/') ? 'active' : '' ?>" href="/poultry_shop/customers/create.php">Create Customer</a>
+                    <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'index.php' && strpos($_SERVER['REQUEST_URI'], '/payments/') ? 'active' : '' ?>" href="/poultry_shop/payments/index.php">Payments</a>
                 </div>
             </div>
         </li>
@@ -186,12 +213,7 @@ date_default_timezone_set('Asia/Karachi');
                 <span>Sales</span>
             </a>
         </li>
-        <li class="nav-item <?= navActiveDir('payments') ? 'active' : '' ?>">
-            <a class="nav-link" href="/poultry_shop/payments/index.php">
-                <i class="fas fa-fw fa-money-bill-wave"></i>
-                <span>Payments</span>
-            </a>
-        </li>
+
         <li class="nav-item <?= navActiveDir('expenses') ? 'active' : '' ?>">
             <a class="nav-link" href="/poultry_shop/expenses/index.php">
                 <i class="fas fa-fw fa-coins"></i>
@@ -231,27 +253,13 @@ date_default_timezone_set('Asia/Karachi');
         </li>
 
         <hr class="sidebar-divider">
-        <div class="sidebar-heading">Reports</div>
+        
 
-        <!-- Reports Accordion -->
-        <li class="nav-item">
-            <a class="nav-link <?= $collapsed($expReports) ?>" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReports" aria-expanded="<?= $expanded($expReports) ?>">
-                <i class="fas fa-fw fa-chart-bar"></i>
-                <span>Reports</span>
-            </a>
-            <div id="collapseReports" class="collapse <?= $expReports ?>" data-bs-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'daily_sales.php' && strpos($_SERVER['REQUEST_URI'], '/reports/') ? 'active' : '' ?>" href="/poultry_shop/reports/daily_sales.php">Daily Report</a>
-                    <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'profit_loss.php' && strpos($_SERVER['REQUEST_URI'], '/reports/') ? 'active' : '' ?>" href="/poultry_shop/reports/profit_loss.php">Profit & Loss Report</a>
-                    <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'stock_report.php' && strpos($_SERVER['REQUEST_URI'], '/reports/') ? 'active' : '' ?>" href="/poultry_shop/reports/stock_report.php">Stock Report</a>
-                </div>
-            </div>
-        </li>
-
+        
         <hr class="sidebar-divider d-none d-md-block">
 
-        <div class="text-center d-none d-md-block">
-            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        <div class="d-none d-md-block" style="text-align: center; margin-top: auto; padding: 1rem 0; width: 100%;">
+            <button class="rounded-circle border-0" id="sidebarToggle" style="display: inline-block; margin: 0 auto;"></button>
         </div>
         </div><!-- .sidebar-inner -->
     </ul>

@@ -94,7 +94,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <i class="fas fa-drumstick fa-2x text-info"></i>
                     </div>
                     <div class="col-9">
-                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Available Birds</div>
+                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Available QTY</div>
                         <div class="h4 mb-0 fw-bold"><?= number_format($grand['avail_birds']) ?></div>
                     </div>
                 </div>
@@ -110,7 +110,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <div class="col-9">
                         <div class="text-xs fw-bold text-warning text-uppercase mb-1">Total Sold</div>
-                        <div class="h4 mb-0 fw-bold"><?= number_format($grand['out_birds']) ?> birds</div>
+                        <div class="h4 mb-0 fw-bold"><?= number_format($grand['out_birds']) ?> QTY</div>
                     </div>
                 </div>
             </div>
@@ -133,7 +133,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <div class="text-xs fw-bold text-uppercase text-<?= $cardBorder ?>"><?= htmlspecialchars($sd['name']) ?></div>
                     <span class="badge bg-<?= $isOut ? 'danger' : ($isLow ? 'warning' : 'success') ?>">
-                        <?= number_format($sd['avail_birds']) ?> birds
+                        <?= number_format($sd['avail_birds']) ?> QTY
                     </span>
                 </div>
                 <div class="h4 mb-0 fw-bold text-<?= $isOut ? 'danger' : 'success' ?>">
@@ -162,11 +162,11 @@ require_once __DIR__ . '/../includes/header.php';
                 <thead class="table-light">
                     <tr>
                         <th>Chicken Type</th>
-                        <th class="text-end">In (Birds)</th>
+                        <th class="text-end">In (QTY)</th>
                         <th class="text-end">In (KG)</th>
-                        <th class="text-end">Sold (Birds)</th>
+                        <th class="text-end">Sold (QTY)</th>
                         <th class="text-end">Sold (KG)</th>
-                        <th class="text-end">Available Birds</th>
+                        <th class="text-end">Available QTY</th>
                         <th class="text-end">Available KG</th>
                         <th class="text-end">Stock Value</th>
                     </tr>

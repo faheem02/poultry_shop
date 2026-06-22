@@ -6,6 +6,10 @@ require_once __DIR__ . '/../includes/functions.php';
 $pdo = getDB();
 $page_title = 'Purchases';
 
+// Get filter values
+$from = $_GET['from'] ?? '';
+$to   = $_GET['to'] ?? '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) die('CSRF failed');
 
@@ -51,7 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 $suppliers = $pdo->query("SELECT id, name FROM suppliers ORDER BY name")->fetchAll();
 $types     = $pdo->query("SELECT id, name FROM chicken_types ORDER BY name")->fetchAll();
 
-$purchases = $pdo->query("
+// Build query with date filter
+$sql = "
     SELECT p.*, s.name AS supplier_name, u.username AS created_by_name,
            ct.name AS chicken_type_name
     FROM purchases p
@@ -59,17 +64,82 @@ $purchases = $pdo->query("
     LEFT JOIN users u ON u.id = p.created_by
     LEFT JOIN stock_ledger sl ON sl.reference_id = p.id AND sl.transaction_type = 'purchase'
     LEFT JOIN chicken_types ct ON ct.id = sl.chicken_type_id
-    ORDER BY p.purchase_date DESC, p.id DESC
-")->fetchAll();
+    WHERE 1=1
+";
+$params = [];
+if ($from) {
+    $sql .= " AND p.purchase_date >= ?";
+    $params[] = $from;
+}
+if ($to) {
+    $sql .= " AND p.purchase_date <= ?";
+    $params[] = $to;
+}
+$sql .= " ORDER BY p.purchase_date DESC, p.id DESC";
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$purchases = $stmt->fetchAll();
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
+<style>
+/* ---------- Print Styles ---------- */
+@media print {
+    .no-print, .no-print * {
+        display: none !important;
+    }
+    .card {
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+    }
+    .table {
+        font-size: 11px !important;
+    }
+    .table thead th {
+        background: #e9ecef !important;
+        border-bottom: 2px solid #333 !important;
+    }
+    .table tbody tr {
+        page-break-inside: avoid;
+    }
+}
+</style>
+
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Purchases</h1>
-    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#purchaseModal">
-        <i class="fas fa-plus me-1"></i> New Purchase
-    </button>
+    <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-truck me-2" style="color:#4e73df;"></i> Purchases</h1>
+    <div class="no-print">
+        <button class="btn btn-outline-success btn-sm me-1" onclick="window.print()">
+            <i class="fas fa-print me-1"></i> Print
+        </button>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#purchaseModal">
+            <i class="fas fa-plus me-1"></i> New Purchase
+        </button>
+    </div>
+</div>
+
+<!-- Filter Card -->
+<div class="card mb-4 border-start-info no-print">
+    <div class="card-body">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-auto">
+                <label class="form-label small fw-bold">From</label>
+                <input type="date" name="from" class="form-control form-control-sm" value="<?= htmlspecialchars($from) ?>">
+            </div>
+            <div class="col-auto">
+                <label class="form-label small fw-bold">To</label>
+                <input type="date" name="to" class="form-control form-control-sm" value="<?= htmlspecialchars($to) ?>">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter me-1"></i> Filter</button>
+            </div>
+            <?php if ($from || $to): ?>
+            <div class="col-auto">
+                <a href="<?= $_SERVER['PHP_SELF'] ?>" class="btn btn-outline-secondary btn-sm">Clear</a>
+            </div>
+            <?php endif; ?>
+        </form>
+    </div>
 </div>
 
 <div class="card border-start-primary">
@@ -87,10 +157,13 @@ require_once __DIR__ . '/../includes/header.php';
                         <th>Rate/KG</th>
                         <th>Total Cost</th>
                         <th>Added By</th>
-                        <th>Actions</th>
+                        <th class="no-print">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <?php if (empty($purchases)): ?>
+                    <tr><td colspan="10" class="text-center text-muted py-4">No purchases found for the selected period.</td></tr>
+                    <?php else: ?>
                     <?php foreach ($purchases as $p): ?>
                     <tr>
                         <td><?= date('d M Y', strtotime($p['purchase_date'])) ?></td>
@@ -102,20 +175,21 @@ require_once __DIR__ . '/../includes/header.php';
                         <td>Rs. <?= money($p['purchase_rate']) ?></td>
                         <td>Rs. <?= money($p['total_cost']) ?></td>
                         <td><?= htmlspecialchars($p['created_by_name'] ?? '-') ?></td>
-                        <td>
+                        <td class="no-print">
                             <a href="view.php?id=<?= $p['id'] ?>" class="btn btn-sm btn-outline-info">
                                 <i class="fas fa-eye"></i>
                             </a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- Purchase Modal -->
+<!-- Purchase Modal (unchanged) -->
 <div class="modal fade" id="purchaseModal">
     <div class="modal-dialog modal-lg">
         <form method="POST" class="modal-content">

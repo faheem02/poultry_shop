@@ -82,6 +82,11 @@ function getCustomerBalance(int $customer_id): float {
 
 function getSupplierBalance(int $supplier_id): float {
     $pdo = getDB();
+    $stmt = $pdo->prepare("SELECT opening_balance FROM suppliers WHERE id = ?");
+    $stmt->execute([$supplier_id]);
+    $supp = $stmt->fetch();
+    $opening = (float)($supp['opening_balance'] ?? 0);
+
     $stmt = $pdo->prepare("SELECT COALESCE(SUM(total_cost), 0) AS total_purchases FROM purchases WHERE supplier_id = ?");
     $stmt->execute([$supplier_id]);
     $purchases = (float)$stmt->fetch()['total_purchases'];
@@ -90,37 +95,58 @@ function getSupplierBalance(int $supplier_id): float {
     $stmt->execute([$supplier_id]);
     $payments = (float)$stmt->fetch()['total_payments'];
 
-    return $purchases - $payments;
+    return $opening + $purchases - $payments;
 }
 
 function todaySalesTotal(): float {
     $pdo = getDB();
-    $stmt = $pdo->query("SELECT COALESCE(SUM(amount), 0) AS total FROM payments WHERE DATE(payment_date) = CURDATE()");
-    return (float)$stmt->fetch()['total'];
+    $stmt = $pdo->query("
+        SELECT COALESCE(SUM(net_total), 0) 
+        FROM sales 
+        WHERE DATE(sale_date) = CURDATE()
+    ");
+    return (float)$stmt->fetchColumn();
 }
 
 function todayProfit(): float {
     $pdo = getDB();
-    
-    // Revenue today (from payments - includes sales + due payments)
-    $stmt = $pdo->query("SELECT COALESCE(SUM(amount), 0) AS total FROM payments WHERE DATE(payment_date) = CURDATE()");
-    $revenue = (float)$stmt->fetch()['total'];
-    
-    // COGS today (average purchase rate × weight sold)
-    $stmt = $pdo->query("SELECT COALESCE(AVG(purchase_rate), 0) AS avg_rate FROM purchases WHERE DATE(purchase_date) = CURDATE()");
-    $avg_rate = (float)$stmt->fetch()['avg_rate'];
-    
-    $stmt = $pdo->query("SELECT COALESCE(SUM(weight), 0) AS total_weight FROM sales WHERE DATE(sale_date) = CURDATE()");
-    $total_weight = (float)$stmt->fetch()['total_weight'];
-    
-    $cogs = $avg_rate * $total_weight;
-    
-    // Expenses today
-    $stmt = $pdo->query("SELECT COALESCE(SUM(amount), 0) AS total FROM expenses WHERE DATE(expense_date) = CURDATE()");
-    $expenses = (float)$stmt->fetch()['total'];
-    
-    // Net Profit = (Revenue - COGS) - Expenses
-    return ($revenue - $cogs) - $expenses;
+
+    // 1. Today's sales revenue (net total)
+    $stmt = $pdo->query("
+        SELECT COALESCE(SUM(net_total), 0) 
+        FROM sales 
+        WHERE DATE(sale_date) = CURDATE()
+    ");
+    $revenue = (float)$stmt->fetchColumn();
+
+    // 2. COGS: average purchase rate from all purchases × total weight sold today
+    //    (simplified – you may want a more accurate FIFO/weighted average)
+    $stmt = $pdo->query("
+        SELECT COALESCE(AVG(purchase_rate), 0) 
+        FROM purchases 
+        WHERE DATE(purchase_date) <= CURDATE()
+    ");
+    $avgCost = (float)$stmt->fetchColumn();
+
+    $stmt = $pdo->query("
+        SELECT COALESCE(SUM(weight), 0) 
+        FROM sales 
+        WHERE DATE(sale_date) = CURDATE()
+    ");
+    $totalWeight = (float)$stmt->fetchColumn();
+
+    $cogs = $avgCost * $totalWeight;
+
+    // 3. Today's expenses
+    $stmt = $pdo->query("
+        SELECT COALESCE(SUM(amount), 0) 
+        FROM expenses 
+        WHERE DATE(expense_date) = CURDATE()
+    ");
+    $expenses = (float)$stmt->fetchColumn();
+
+    // Net Profit
+    return $revenue - $cogs - $expenses;
 }
 
 function availableStock(int $chicken_type_id): array {

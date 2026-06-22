@@ -32,6 +32,11 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-truck me-1"></i> Supplier Ledger Report</h1>
+    <div>
+        <button class="btn btn-sm btn-outline-success" onclick="window.print()">
+            <i class="fas fa-file-pdf me-1"></i> PDF
+        </button>
+    </div>
 </div>
 
 <div class="card mb-4 border-start-info">

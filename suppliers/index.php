@@ -10,21 +10,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) die('CSRF failed');
 
     if ($_POST['action'] === 'create') {
-        $stmt = $pdo->prepare("INSERT INTO suppliers (name, phone, email, address) VALUES (?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO suppliers (name, phone, email, address, opening_balance) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([
             sanitize($_POST['name']),
             sanitize($_POST['phone']),
             sanitize($_POST['email']),
             sanitize($_POST['address']),
+            (float)($_POST['opening_balance'] ?? 0)
         ]);
         setFlash('Supplier added successfully.');
     } elseif ($_POST['action'] === 'update') {
-        $stmt = $pdo->prepare("UPDATE suppliers SET name=?, phone=?, email=?, address=? WHERE id=?");
+        $stmt = $pdo->prepare("UPDATE suppliers SET name=?, phone=?, email=?, address=?, opening_balance=? WHERE id=?");
         $stmt->execute([
             sanitize($_POST['name']),
             sanitize($_POST['phone']),
             sanitize($_POST['email']),
             sanitize($_POST['address']),
+            (float)($_POST['opening_balance'] ?? 0),
             (int)$_POST['id']
         ]);
         setFlash('Supplier updated successfully.');
@@ -65,6 +67,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <th>Phone</th>
                         <th>Email</th>
                         <th>Address</th>
+                        <th class="text-end">Opening Balance</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -76,6 +79,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <td><?= htmlspecialchars($s['phone'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($s['email'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($s['address'] ?? '-') ?></td>
+                        <td class="text-end fw-bold">Rs. <?= money($s['opening_balance'] ?? 0) ?></td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary edit-btn"
                                 data-id="<?= $s['id'] ?>"
@@ -83,6 +87,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 data-phone="<?= htmlspecialchars($s['phone'] ?? '', ENT_QUOTES) ?>"
                                 data-email="<?= htmlspecialchars($s['email'] ?? '', ENT_QUOTES) ?>"
                                 data-address="<?= htmlspecialchars(str_replace(["\r","\n"],' ', $s['address'] ?? ''), ENT_QUOTES) ?>"
+                                data-opening="<?= $s['opening_balance'] ?? 0 ?>"
                                 data-bs-toggle="modal" data-bs-target="#editModal">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -126,6 +131,10 @@ require_once __DIR__ . '/../includes/header.php';
                     <label class="form-label">Address</label>
                     <textarea name="address" id="edit_address" class="form-control" rows="2"></textarea>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Opening Balance (Rs.)</label>
+                    <input type="number" name="opening_balance" id="edit_opening" class="form-control" step="0.01">
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -144,6 +153,7 @@ $(function () {
         $('#edit_phone').val(btn.data('phone'));
         $('#edit_email').val(btn.data('email'));
         $('#edit_address').val(btn.data('address'));
+        $('#edit_opening').val(btn.data('opening'));
     });
 });
 </script>

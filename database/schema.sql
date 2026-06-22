@@ -38,12 +38,13 @@ CREATE TABLE IF NOT EXISTS customers (
 -- 3. suppliers
 -- -------------------------------------------
 CREATE TABLE IF NOT EXISTS suppliers (
-  id          INT             AUTO_INCREMENT PRIMARY KEY,
-  name        VARCHAR(100)    NOT NULL,
-  phone       VARCHAR(20)     DEFAULT NULL,
-  email       VARCHAR(100)    DEFAULT NULL,
-  address     TEXT            DEFAULT NULL,
-  created_at  TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
+  id              INT             AUTO_INCREMENT PRIMARY KEY,
+  name            VARCHAR(100)    NOT NULL,
+  phone           VARCHAR(20)     DEFAULT NULL,
+  email           VARCHAR(100)    DEFAULT NULL,
+  address         TEXT            DEFAULT NULL,
+  opening_balance DECIMAL(12,2)   NOT NULL DEFAULT 0.00,
+  created_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 -- -------------------------------------------

@@ -85,6 +85,16 @@ $(document).ready(function () {
     $discountInput.on('input', recalculate);
     $paidInput.on('input', recalculate);
 
+    // Payment method change -> hide paid amount on credit
+    $('#payment_method').on('change', function () {
+        const isCredit = this.value === 'credit';
+        $('.credit-sensitive').toggle(!isCredit);
+        if (isCredit) {
+            $paidInput.val('0');
+            recalculate();
+        }
+    });
+
     // ---------------------- LOAD TODAY'S RATE ----------------------
     function loadTodayRate(chickenTypeId) {
         if (!chickenTypeId) {
@@ -216,7 +226,7 @@ $(document).ready(function () {
             net_total: $netTotalEl.text().replace('Rs. ', '').replace(/,/g, ''),
             paid_amount: $paidInput.val() || 0,
             balance: $balanceEl.text().replace('Rs. ', '').replace(/,/g, ''),
-            payment_method: $('input[name="payment_method"]:checked').val() || 'cash',
+            payment_method: $('#payment_method').val() || 'cash',
             sale_date: $('input[name="sale_date"]').val(),
         };
 
@@ -277,6 +287,7 @@ $(document).ready(function () {
         $('#customer_name_display').text('Walk-in Customer');
         $('#customer_search').val('');
         $('#payment_method').val('cash');
+        $('.credit-sensitive').show();
         loadTodayRate($('#chicken_type_id').val());
     }
 

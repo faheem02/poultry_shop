@@ -12,9 +12,10 @@ $today_sales   = todaySalesTotal();
 $today_profit  = todayProfit();
 
 $pending_recovery = $pdo->query("
-    SELECT COALESCE(SUM(balance), 0) AS total
-    FROM sales WHERE balance > 0
-")->fetch()['total'] ?? 0;
+    SELECT COALESCE(SUM(balance), 0) 
+    FROM sales 
+    WHERE balance > 0
+")->fetchColumn();
 
 $today_orders = $pdo->query("
     SELECT COUNT(*) AS cnt FROM sales WHERE sale_date = CURDATE()

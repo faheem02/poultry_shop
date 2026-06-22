@@ -66,15 +66,108 @@ $grand_total = array_sum($totals);
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
+<style>
+/* ---------- Print Styles ---------- */
+@media print {
+    body * {
+        visibility: visible !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        color: #000 !important;
+    }
+    .no-print, .no-print * {
+        display: none !important;
+    }
+    .card {
+        border: 1px solid #ccc !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+    .card-header {
+        background: #f8f9fa !important;
+        border-bottom: 2px solid #333 !important;
+    }
+    .table {
+        font-size: 11px !important;
+    }
+    .table thead th {
+        background: #e9ecef !important;
+        color: #000 !important;
+        border-bottom: 2px solid #333 !important;
+    }
+    .table tbody tr {
+        page-break-inside: avoid;
+    }
+    .text-danger, .text-warning {
+        color: #000 !important;
+    }
+    .fw-bold {
+        font-weight: 700 !important;
+    }
+    .badge {
+        border: 1px solid #000 !important;
+        background: #fff !important;
+        color: #000 !important;
+    }
+    .card-body {
+        padding: 10px 15px !important;
+    }
+    .table-responsive {
+        overflow: visible !important;
+    }
+    .print-header {
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 8px;
+    }
+}
+
+/* ---------- UI refinements ---------- */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+.card-header {
+    background: transparent;
+    border-bottom: 2px solid #f0f2f7;
+    font-weight: 700;
+    color: #2d3748;
+}
+.card-body {
+    padding: 20px 24px;
+}
+.table th {
+    font-weight: 700;
+    color: #4a5568;
+    border-top: none;
+}
+.table td {
+    vertical-align: middle;
+}
+.border-start-warning { border-left: 4px solid #f6c23e; }
+.border-start-danger { border-left: 4px solid #e74a3b; }
+.border-start-info { border-left: 4px solid #36b9cc; }
+.border-start-primary { border-left: 4px solid #4e73df; }
+</style>
+
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Expenses</h1>
-    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#expenseModal">
-        <i class="fas fa-plus me-1"></i> Add Expense
-    </button>
+    <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-coins me-2" style="color:#f6c23e;"></i> Expenses</h1>
+    <div class="no-print">
+        <button class="btn btn-outline-success btn-sm me-1" onclick="window.print()">
+            <i class="fas fa-print me-1"></i> Print
+        </button>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#expenseModal">
+            <i class="fas fa-plus me-1"></i> Add Expense
+        </button>
+    </div>
 </div>
 
-<!-- Summary -->
-<div class="row mb-4">
+<!-- Summary Cards (hidden on print) -->
+<div class="row mb-4 no-print">
     <?php foreach ($totals as $cat => $total): ?>
     <div class="col-md-3 col-6 mb-3">
         <div class="card border-start-warning dashboard-card h-100">
@@ -95,21 +188,41 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<!-- Filter -->
-<div class="card mb-4 border-start-info">
+<!-- Filter Card (hidden on print) -->
+<div class="card mb-4 border-start-info no-print">
     <div class="card-body">
         <form method="GET" class="row g-2 align-items-end">
-            <div class="col-auto"><input type="date" name="from" class="form-control form-control-sm" value="<?= $from ?>"></div>
-            <div class="col-auto"><input type="date" name="to" class="form-control form-control-sm" value="<?= $to ?>"></div>
-            <div class="col-auto"><button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter me-1"></i> Filter</button></div>
+            <div class="col-auto">
+                <label class="form-label small fw-bold">From</label>
+                <input type="date" name="from" class="form-control form-control-sm" value="<?= htmlspecialchars($from) ?>">
+            </div>
+            <div class="col-auto">
+                <label class="form-label small fw-bold">To</label>
+                <input type="date" name="to" class="form-control form-control-sm" value="<?= htmlspecialchars($to) ?>">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter me-1"></i> Filter</button>
+            </div>
+            <?php if ($from !== date('Y-m-01') || $to !== date('Y-m-d')): ?>
+            <div class="col-auto">
+                <a href="<?= $_SERVER['PHP_SELF'] ?>" class="btn btn-outline-secondary btn-sm">Clear</a>
+            </div>
+            <?php endif; ?>
         </form>
     </div>
 </div>
 
+<!-- Expenses Table -->
 <div class="card border-start-primary">
+    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-list-ul me-1"></i> Expense Records</span>
+        <?php if ($from || $to): ?>
+        <span class="badge bg-secondary"><?= date('d M Y', strtotime($from)) ?> – <?= date('d M Y', strtotime($to)) ?></span>
+        <?php endif; ?>
+    </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table datatable table-hover mb-0 small">
+            <table class="table table-hover mb-0 small">
                 <thead class="table-light">
                     <tr>
                         <th>Date</th>
@@ -117,10 +230,13 @@ require_once __DIR__ . '/../includes/header.php';
                         <th>Amount</th>
                         <th>Description</th>
                         <th>Added By</th>
-                        <th>Actions</th>
+                        <th class="no-print">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <?php if (empty($expenses)): ?>
+                    <tr><td colspan="6" class="text-center text-muted py-4">No expenses found for the selected period.</td></tr>
+                    <?php else: ?>
                     <?php foreach ($expenses as $e): ?>
                     <tr>
                         <td><?= date('d M Y', strtotime($e['expense_date'])) ?></td>
@@ -128,7 +244,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <td class="fw-bold text-danger">Rs. <?= money($e['amount']) ?></td>
                         <td><?= htmlspecialchars($e['description'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($e['created_by_name'] ?? '-') ?></td>
-                        <td>
+                        <td class="no-print">
                             <button class="btn btn-sm btn-outline-primary edit-btn"
                                 data-id="<?= $e['id'] ?>"
                                 data-cat="<?= $e['expense_category'] ?>"
@@ -147,14 +263,15 @@ require_once __DIR__ . '/../includes/header.php';
                         </td>
                     </tr>
                     <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- Create Modal -->
-<div class="modal fade" id="expenseModal">
+<!-- Create Modal (no-print) -->
+<div class="modal fade no-print" id="expenseModal">
     <div class="modal-dialog">
         <form method="POST" class="modal-content">
             <input type="hidden" name="action" value="create">
@@ -166,11 +283,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label">Category *</label>
-                    <select name="expense_category" class="form-select" required>
-                        <?php foreach ($categories as $c): ?>
-                        <option value="<?= $c ?>"><?= ucfirst($c) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <input type="text" name="expense_category" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Amount (Rs.) *</label>
@@ -193,8 +306,8 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<!-- Edit Modal -->
-<div class="modal fade" id="editModal">
+<!-- Edit Modal (no-print) -->
+<div class="modal fade no-print" id="editModal">
     <div class="modal-dialog">
         <form method="POST" class="modal-content">
             <input type="hidden" name="action" value="update">
@@ -207,11 +320,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label">Category *</label>
-                    <select name="expense_category" id="edit_cat" class="form-select" required>
-                        <?php foreach ($categories as $c): ?>
-                        <option value="<?= $c ?>"><?= ucfirst($c) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <input type="text" name="expense_category" id="edit_cat" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Amount (Rs.) *</label>

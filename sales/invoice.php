@@ -35,7 +35,9 @@ $page_title = 'Invoice - ' . $sale['invoice_no'];
     <link href="/poultry_shop/assets/css/sb-admin-custom.css" rel="stylesheet">
     <style>
         @media print { .no-print { display: none !important; } body { background: #fff; } .card { box-shadow: none !important; border: 1px solid #dee2e6 !important; } }
-        .invoice-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .invoice-title { font-size: 1.5rem; font-weight: 700; color: #059669; }
+        table { font-size: 0.95rem; }
+        .table td, .table th { padding: 0.5rem 0.75rem; }
     </style>
 </head>
 <body>
@@ -74,6 +76,7 @@ $page_title = 'Invoice - ' . $sale['invoice_no'];
                     <thead class="table-light">
                         <tr>
                             <th>Chicken Type</th>
+                            <th class="text-center">Qty</th>
                             <th class="text-end">Rate/KG</th>
                             <th class="text-end">Weight (KG)</th>
                             <th class="text-end">Amount</th>
@@ -82,6 +85,7 @@ $page_title = 'Invoice - ' . $sale['invoice_no'];
                     <tbody>
                         <tr>
                             <td><?= htmlspecialchars($sale['chicken_type']) ?></td>
+                            <td class="text-center fw-bold"><?= (int)$sale['birds_count'] ?></td>
                             <td class="text-end">Rs. <?= money($sale['rate_per_kg']) ?></td>
                             <td class="text-end"><?= number_format($sale['weight'], 3) ?></td>
                             <td class="text-end">Rs. <?= money($sale['amount']) ?></td>
@@ -89,23 +93,23 @@ $page_title = 'Invoice - ' . $sale['invoice_no'];
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="3" class="text-end fw-bold">Subtotal</td>
+                            <td colspan="4" class="text-end fw-bold">Subtotal</td>
                             <td class="text-end">Rs. <?= money($sale['amount']) ?></td>
                         </tr>
                         <tr>
-                            <td colspan="3" class="text-end fw-bold">Discount</td>
+                            <td colspan="4" class="text-end fw-bold">Discount</td>
                             <td class="text-end">Rs. <?= money($sale['discount']) ?></td>
                         </tr>
                         <tr class="table-active">
-                            <td colspan="3" class="text-end fw-bold">Net Total</td>
+                            <td colspan="4" class="text-end fw-bold">Net Total</td>
                             <td class="text-end fw-bold">Rs. <?= money($sale['net_total']) ?></td>
                         </tr>
                         <tr>
-                            <td colspan="3" class="text-end fw-bold">Paid</td>
+                            <td colspan="4" class="text-end fw-bold">Paid</td>
                             <td class="text-end">Rs. <?= money($sale['paid_amount']) ?></td>
                         </tr>
                         <tr class="<?= $sale['balance'] > 0 ? 'table-danger' : 'table-success' ?>">
-                            <td colspan="3" class="text-end fw-bold">Balance</td>
+                            <td colspan="4" class="text-end fw-bold">Balance</td>
                             <td class="text-end fw-bold">Rs. <?= money($sale['balance']) ?></td>
                         </tr>
                     </tfoot>

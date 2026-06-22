@@ -37,6 +37,10 @@ if ($customer_id) {
             if ($a['date'] === '0000-00-00') return -1;
             if ($b['date'] === '0000-00-00') return 1;
             if ($a['date'] !== $b['date']) return strcmp($a['date'], $b['date']);
+            $order = ['payment' => 0, 'sale' => 1];
+            $oa = $order[$a['type']] ?? 2;
+            $ob = $order[$b['type']] ?? 2;
+            if ($oa !== $ob) return $oa <=> $ob;
             return ($a['sort_id'] ?? 0) <=> ($b['sort_id'] ?? 0);
         });
 
@@ -54,6 +58,11 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-book me-1"></i> Customer Ledger Report</h1>
+    <div>
+        <button class="btn btn-sm btn-outline-success" onclick="window.print()">
+            <i class="fas fa-file-pdf me-1"></i> PDF
+        </button>
+    </div>
 </div>
 
 <div class="card mb-4 border-start-info">

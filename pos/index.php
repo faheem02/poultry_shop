@@ -106,7 +106,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
 
                         <!-- Paid Amount -->
-                        <div class="col-md-6">
+                        <div class="col-md-6 credit-sensitive">
                             <label class="form-label small fw-bold">Paid Amount (Rs.)</label>
                             <input type="number" name="paid_amount" id="paid_amount" class="form-control form-control-lg" step="0.01" min="0" value="0">
                         </div>
@@ -151,7 +151,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Quick Pay Buttons -->
-        <div class="card mb-3">
+        <div class="card mb-3 credit-sensitive">
             <div class="card-header"><i class="fas fa-bolt me-1"></i> Quick Pay</div>
             <div class="card-body">
                 <div class="d-flex gap-2 flex-wrap">

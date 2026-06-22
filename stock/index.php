@@ -114,6 +114,11 @@ require_once __DIR__ . '/../includes/header.php';
     <h1 class="h3 mb-0 text-gray-800">
         <i class="fas fa-warehouse me-1"></i> Stock Management
     </h1>
+    <div>
+        <button class="btn btn-sm btn-outline-success" onclick="window.print()">
+            <i class="fas fa-file-pdf me-1"></i> PDF
+        </button>
+    </div>
 </div>
 
 <!-- Top Stats Row -->
@@ -156,7 +161,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <i class="fas fa-drumstick fa-2x text-info"></i>
                     </div>
                     <div class="col-9">
-                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Available Birds</div>
+                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Available QTY</div>
                         <div class="h4 mb-0 fw-bold"><?= number_format($grand['avail_birds']) ?></div>
                     </div>
                 </div>
@@ -172,7 +177,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <div class="col-9">
                         <div class="text-xs fw-bold text-warning text-uppercase mb-1">Total Sold</div>
-                        <div class="h4 mb-0 fw-bold"><?= number_format($grand['out_birds']) ?> birds</div>
+                        <div class="h4 mb-0 fw-bold"><?= number_format($grand['out_birds']) ?> QTY</div>
                     </div>
                 </div>
             </div>
@@ -195,7 +200,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <div class="text-xs fw-bold text-uppercase text-<?= $cardBorder ?>"><?= htmlspecialchars($sd['name']) ?></div>
                     <span class="badge bg-<?= $isOut ? 'danger' : ($isLow ? 'warning' : 'success') ?>">
-                        <?= number_format($sd['avail_birds']) ?> birds
+                        <?= number_format($sd['avail_birds']) ?> QTY
                     </span>
                 </div>
                 <div class="h4 mb-0 fw-bold text-<?= $isOut ? 'danger' : 'success' ?>">
@@ -245,11 +250,11 @@ require_once __DIR__ . '/../includes/header.php';
                         <th>Date</th>
                         <th>Type</th>
                         <th>Chicken</th>
-                        <th class="text-end">Birds</th>
+                        <th class="text-end">QTY</th>
                         <th class="text-end">Weight (KG)</th>
                         <th class="text-end">Rate/KG</th>
                         <th class="text-end">Amount</th>
-                        <th class="text-end">Balance Birds</th>
+                        <th class="text-end">Balance QTY</th>
                         <th class="text-end">Balance KG</th>
                         <th>Notes</th>
                     </tr>

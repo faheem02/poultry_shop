@@ -8,12 +8,13 @@ $page_title = 'Create Supplier';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) die('CSRF failed');
-    $stmt = $pdo->prepare("INSERT INTO suppliers (name, phone, email, address) VALUES (?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO suppliers (name, phone, email, address, opening_balance) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([
         sanitize($_POST['name']),
         sanitize($_POST['phone']),
         sanitize($_POST['email']),
         sanitize($_POST['address']),
+        (float)($_POST['opening_balance'] ?? 0)
     ]);
     setFlash('Supplier created successfully.');
     header('Location: /poultry_shop/suppliers/index.php');
@@ -63,6 +64,13 @@ require_once __DIR__ . '/../includes/header.php';
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                                 <input type="email" name="email" class="form-control" placeholder="e.g. info@supplier.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Opening Balance (Rs.)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-coins"></i></span>
+                                <input type="number" name="opening_balance" class="form-control" step="0.01" value="0">
                             </div>
                         </div>
                         <div class="col-12 mb-4">
