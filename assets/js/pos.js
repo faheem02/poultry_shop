@@ -103,7 +103,7 @@ $(document).ready(function () {
         }
         currentChickenTypeId = chickenTypeId;
         $.ajax({
-            url: '/poultry_shop/pos/pos_ajax.php',
+            url: '/poultry_shop/pages/pos/pos_ajax.php',
             method: 'GET',
             data: { action: 'get_rate', chicken_type_id: chickenTypeId },
             dataType: 'json',
@@ -177,7 +177,7 @@ $(document).ready(function () {
         const q = $(this).val();
         if (q.length < 1) return;
         $.ajax({
-            url: '/poultry_shop/pos/pos_ajax.php',
+            url: '/poultry_shop/pages/pos/pos_ajax.php',
             method: 'GET',
             data: { action: 'search_customer', q: q },
             dataType: 'json',
@@ -242,7 +242,7 @@ $(document).ready(function () {
         btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
 
         $.ajax({
-            url: '/poultry_shop/pos/pos_ajax.php',
+            url: '/poultry_shop/pages/pos/pos_ajax.php',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -257,7 +257,7 @@ $(document).ready(function () {
                         cancelButtonText: 'New Sale',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.open('/poultry_shop/sales/invoice.php?id=' + res.sale_id, '_blank');
+                            window.open('/poultry_shop/pages/sales/invoice.php?id=' + res.sale_id, '_blank');
                         }
                         resetPOS();
                     });
