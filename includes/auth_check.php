@@ -3,14 +3,14 @@
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /poultry_shop/login.php');
+    header('Location: ' . BASE_URL . '/login.php');
     exit;
 }
 
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
     session_unset();
     session_destroy();
-    header('Location: /poultry_shop/login.php?expired=1');
+    header('Location: ' . BASE_URL . '/login.php?expired=1');
     exit;
 }
 

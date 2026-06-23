@@ -180,10 +180,10 @@ require_once __DIR__ . '/../../includes/header.php';
     </div>
 </div>
 
-<script src="/poultry_shop/assets/js/pos.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/pos.js"></script>
 <script>
 // Load today's rates sidebar
-$.get('/poultry_shop/pages/pos/pos_ajax.php', { action: 'today_rates' }, function (res) {
+$.get(BASE_URL + '/pages/pos/pos_ajax.php', { action: 'today_rates' }, function (res) {
     if (res.length) {
         let html = '';
         res.forEach(function (r) {

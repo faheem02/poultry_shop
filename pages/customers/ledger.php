@@ -222,7 +222,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <button class="btn btn-outline-success btn-sm me-1" onclick="window.print()">
             <i class="fas fa-print me-1"></i> Print
         </button>
-        <a href="/poultry_shop/pages/customers/index.php" class="btn btn-outline-secondary btn-sm">
+        <a href="<?= BASE_URL ?>/pages/customers/index.php" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-left me-1"></i> Back
         </a>
     </div>

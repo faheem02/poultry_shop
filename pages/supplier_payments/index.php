@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $stmt->execute([$id]);
         setFlash('Supplier payment deleted.');
     }
-    header('Location: /poultry_shop/pages/supplier_payments/index.php');
+    header('Location: ' . BASE_URL . '/pages/supplier_payments/index.php');
     exit;
 }
 
@@ -79,7 +79,7 @@ require_once __DIR__ . '/../../includes/header.php';
             </div>
             <?php if ($filter_date): ?>
             <div class="col-auto">
-                <a href="/poultry_shop/pages/supplier_payments/index.php" class="btn btn-secondary btn-sm"><i class="fas fa-times me-1"></i> Clear</a>
+                <a href="<?= BASE_URL ?>/pages/supplier_payments/index.php" class="btn btn-secondary btn-sm"><i class="fas fa-times me-1"></i> Clear</a>
             </div>
             <?php endif; ?>
         </form>

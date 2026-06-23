@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             setFlash('Error: ' . $e->getMessage());
         }
     }
-    header('Location: /poultry_shop/pages/purchases/index.php');
+    header('Location: ' . BASE_URL . '/pages/purchases/index.php');
     exit;
 }
 

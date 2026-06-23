@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         (float)($_POST['opening_balance'] ?? 0)
     ]);
     setFlash('Customer created successfully.');
-    header('Location: /poultry_shop/pages/customers/index.php');
+    header('Location: ' . BASE_URL . '/pages/customers/index.php');
     exit;
 }
 
@@ -26,7 +26,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-user-plus me-1"></i> Create Customer</h1>
-    <a href="/poultry_shop/pages/customers/index.php" class="btn btn-outline-secondary btn-sm">
+    <a href="<?= BASE_URL ?>/pages/customers/index.php" class="btn btn-outline-secondary btn-sm">
         <i class="fas fa-arrow-left me-1"></i> Back to List
     </a>
 </div>
@@ -83,7 +83,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     </div>
                     <hr>
                     <div class="d-flex gap-2 justify-content-end">
-                        <a href="/poultry_shop/pages/customers/index.php" class="btn btn-outline-secondary"><i class="fas fa-times me-1"></i> Cancel</a>
+                        <a href="<?= BASE_URL ?>/pages/customers/index.php" class="btn btn-outline-secondary"><i class="fas fa-times me-1"></i> Cancel</a>
                         <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-1"></i> Save Customer</button>
                     </div>
                 </form>

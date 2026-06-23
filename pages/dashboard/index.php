@@ -73,10 +73,10 @@ require_once __DIR__ . '/../../includes/header.php';
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
     <div>
-        <a href="/poultry_shop/pages/pos/index.php" class="btn btn-primary btn-sm">
+        <a href="<?= BASE_URL ?>/pages/pos/index.php" class="btn btn-primary btn-sm">
             <i class="fas fa-cash-register me-1"></i> New Sale
         </a>
-        <a href="/poultry_shop/pages/chicken_rates/index.php" class="btn btn-success btn-sm">
+        <a href="<?= BASE_URL ?>/pages/chicken_rates/index.php" class="btn btn-success btn-sm">
             <i class="fas fa-tags me-1"></i> Update Rate
         </a>
     </div>
@@ -192,13 +192,13 @@ require_once __DIR__ . '/../../includes/header.php';
                     <?php if (count($recent_sales)): ?>
                         <?php foreach ($recent_sales as $sale): ?>
                         <tr>
-                            <td><a href="/poultry_shop/pages/sales/view.php?id=<?= $sale['id'] ?>"><?= htmlspecialchars($sale['invoice_no']) ?></a></td>
+                            <td><a href="<?= BASE_URL ?>/pages/sales/view.php?id=<?= $sale['id'] ?>"><?= htmlspecialchars($sale['invoice_no']) ?></a></td>
                             <td><?= htmlspecialchars($sale['customer_name'] ?? 'Walk-in') ?></td>
                             <td><?= htmlspecialchars($sale['chicken_type']) ?></td>
                             <td>Rs. <?= money($sale['net_total']) ?></td>
                             <td><?= $sale['balance'] > 0 ? '<span class="text-danger fw-bold">Rs. ' . money($sale['balance']) . '</span>' : '<span class="text-success">Paid</span>' ?></td>
                             <td><?= date('d M Y', strtotime($sale['sale_date'])) ?></td>
-                            <td><a href="/poultry_shop/pages/sales/invoice.php?id=<?= $sale['id'] ?>" class="btn btn-sm btn-outline-primary" target="_blank"><i class="fas fa-print"></i></a></td>
+                            <td><a href="<?= BASE_URL ?>/pages/sales/invoice.php?id=<?= $sale['id'] ?>" class="btn btn-sm btn-outline-primary" target="_blank"><i class="fas fa-print"></i></a></td>
                         </tr>
                         <?php endforeach; ?>
                     <?php else: ?>

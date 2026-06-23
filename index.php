@@ -1,8 +1,8 @@
 <?php
 session_start();
 if (isset($_SESSION['user_id'])) {
-    header('Location: /poultry_shop/pages/dashboard/index.php');
+    header('Location: ' . BASE_URL . '/pages/dashboard/index.php');
 } else {
-    header('Location: /poultry_shop/login.php');
+    header('Location: ' . BASE_URL . '/login.php');
 }
 exit;

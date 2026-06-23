@@ -190,7 +190,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <button class="btn btn-outline-success btn-sm me-1" onclick="window.print()">
             <i class="fas fa-print me-1"></i> Print
         </button>
-        <a href="/poultry_shop/pages/suppliers/index.php" class="btn btn-outline-secondary btn-sm">
+        <a href="<?= BASE_URL ?>/pages/suppliers/index.php" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-left me-1"></i> Back
         </a>
     </div>
@@ -305,7 +305,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <td><?= date('d M Y', strtotime($e['date'])) ?></td>
                         <td>
                             <?php if ($e['type'] === 'purchase'): ?>
-                            <a href="/poultry_shop/pages/purchases/view.php?id=<?= $e['id'] ?>" target="_blank"><?= htmlspecialchars($e['ref']) ?></a>
+                            <a href="<?= BASE_URL ?>/pages/purchases/view.php?id=<?= $e['id'] ?>" target="_blank"><?= htmlspecialchars($e['ref']) ?></a>
                             <?php else: ?>
                             <span class="text-muted"><?= htmlspecialchars($e['ref']) ?></span>
                             <?php endif; ?>

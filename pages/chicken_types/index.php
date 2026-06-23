@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             setFlash('Chicken type updated successfully.');
         }
     }
-    header('Location: /poultry_shop/pages/chicken_types/index.php');
+    header('Location: ' . BASE_URL . '/pages/chicken_types/index.php');
     exit;
 }
 
@@ -36,7 +36,7 @@ if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM chicken_types WHERE id = ?");
     $stmt->execute([$id]);
     setFlash('Chicken type deleted successfully.');
-    header('Location: /poultry_shop/pages/chicken_types/index.php');
+    header('Location: ' . BASE_URL . '/pages/chicken_types/index.php');
     exit;
 }
 

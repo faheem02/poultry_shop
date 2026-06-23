@@ -5,7 +5,7 @@ Vanilla PHP/MySQL POS system. No framework, no build tools, no Composer, no test
 ## Quick start
 
 - **Serve:** XAMPP web server pointing to this directory. Import `database/schema.sql` (creates DB `poultry_shop` + 11 InnoDB tables + seed data).
-- **URL prefix:** All paths are `/poultry_shop/` (hardcoded in `header.php`, `sidebar.php`, `auth_check.php`, `index.php`, `pos_ajax.php`).
+- **URL prefix:** `BASE_URL` constant defined in `includes/database.php` (default `/poultry_shop`). Change for deployment — set to `''` for root domain or `'/shop'` for subdirectory.
 - **DB:** `includes/database.php` — `root` / no password, `poultry_shop`. PDO singleton via `getDB()`.
 - **Logins (plaintext):** `admin` / `admin123`, `cashier` / `cashier123`.
 

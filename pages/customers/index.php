@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         ]);
         setFlash('Customer updated successfully.');
     }
-    header('Location: /poultry_shop/pages/customers/index.php');
+    header('Location: ' . BASE_URL . '/pages/customers/index.php');
     exit;
 }
 
@@ -42,7 +42,7 @@ if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM customers WHERE id = ?");
     $stmt->execute([$id]);
     setFlash('Customer deleted successfully.');
-    header('Location: /poultry_shop/pages/customers/index.php');
+    header('Location: ' . BASE_URL . '/pages/customers/index.php');
     exit;
 }
 
@@ -53,7 +53,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Customers</h1>
-    <a href="/poultry_shop/pages/customers/create.php" class="btn btn-primary btn-sm">
+    <a href="<?= BASE_URL ?>/pages/customers/create.php" class="btn btn-primary btn-sm">
         <i class="fas fa-plus me-1"></i> Add Customer
     </a>
 </div>
@@ -87,7 +87,7 @@ require_once __DIR__ . '/../../includes/header.php';
                             </span>
                         </td>
                         <td>
-                            <a href="/poultry_shop/pages/customers/ledger.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-info" title="Ledger">
+                            <a href="<?= BASE_URL ?>/pages/customers/ledger.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-info" title="Ledger">
                                 <i class="fas fa-book"></i>
                             </a>
                             <button class="btn btn-sm btn-outline-primary edit-btn"

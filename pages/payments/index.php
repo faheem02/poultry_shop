@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $stmt->execute([$id]);
         setFlash('Payment deleted.');
     }
-    header('Location: /poultry_shop/pages/payments/index.php');
+    header('Location: ' . BASE_URL . '/pages/payments/index.php');
     exit;
 }
 

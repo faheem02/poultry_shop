@@ -32,10 +32,10 @@ require_once __DIR__ . '/../../includes/header.php';
         <i class="fas fa-file-invoice me-1"></i> <?= htmlspecialchars($sale['invoice_no']) ?>
     </h1>
     <div>
-        <a href="/poultry_shop/pages/sales/invoice.php?id=<?= $sale['id'] ?>" class="btn btn-primary btn-sm" target="_blank">
+        <a href="<?= BASE_URL ?>/pages/sales/invoice.php?id=<?= $sale['id'] ?>" class="btn btn-primary btn-sm" target="_blank">
             <i class="fas fa-print me-1"></i> Print Invoice
         </a>
-        <a href="/poultry_shop/pages/sales/index.php" class="btn btn-outline-secondary btn-sm">
+        <a href="<?= BASE_URL ?>/pages/sales/index.php" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-left me-1"></i> Back
         </a>
     </div>

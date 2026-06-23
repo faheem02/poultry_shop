@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $stmt->execute([$id]);
         setFlash('Expense deleted.');
     }
-    header('Location: /poultry_shop/pages/expenses/index.php');
+    header('Location: ' . BASE_URL . '/pages/expenses/index.php');
     exit;
 }
 

@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (isset($_SESSION['user_id'])) {
-    header('Location: /poultry_shop/pages/dashboard/index.php');
+    header('Location: ' . BASE_URL . '/pages/dashboard/index.php');
     exit;
 }
 
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_role']   = $user['role'];
             $_SESSION['last_activity'] = time();
 
-            header('Location: /poultry_shop/pages/dashboard/index.php');
+            header('Location: ' . BASE_URL . '/pages/dashboard/index.php');
             exit;
         } else {
             $error = 'Invalid username or password.';
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login - Poultry Shop POS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link href="/poultry_shop/assets/css/sb-admin-custom.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/sb-admin-custom.css" rel="stylesheet">
 </head>
 <body class="login-page">
     <div class="container">

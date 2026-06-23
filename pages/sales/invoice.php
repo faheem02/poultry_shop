@@ -32,7 +32,7 @@ $page_title = 'Invoice - ' . $sale['invoice_no'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice - <?= htmlspecialchars($sale['invoice_no']) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/poultry_shop/assets/css/sb-admin-custom.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/sb-admin-custom.css" rel="stylesheet">
     <style>
         @media print { .no-print { display: none !important; } body { background: #fff; } .card { box-shadow: none !important; border: 1px solid #dee2e6 !important; } }
         .invoice-title { font-size: 1.5rem; font-weight: 700; color: #059669; }

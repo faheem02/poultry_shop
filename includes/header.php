@@ -8,7 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <link href="/poultry_shop/assets/css/sb-admin-custom.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/sb-admin-custom.css" rel="stylesheet">
+    <script>window.BASE_URL = '<?= BASE_URL ?>';</script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -150,7 +151,7 @@
                             </span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in">
-                            <a class="dropdown-item" href="/poultry_shop/logout.php">
+                            <a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">
                                 <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> Logout
                             </a>
                         </div>

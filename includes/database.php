@@ -6,6 +6,7 @@ define('DB_HOST', 'localhost');
 define('DB_NAME', 'poultry_shop');
 define('DB_USER', 'root');
 define('DB_PASS', '');
+define('BASE_URL', '/poultry_shop');
 
 function getDB(): PDO {
     static $pdo = null;

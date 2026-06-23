@@ -70,12 +70,12 @@ require_once __DIR__ . '/../../includes/header.php';
         </h1>
         <nav aria-label="breadcrumb" class="no-print">
             <ol class="breadcrumb small mb-0">
-                <li class="breadcrumb-item"><a href="/poultry_shop/pages/dashboard/index.php" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/pages/dashboard/index.php" class="text-decoration-none">Dashboard</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Sales</li>
             </ol>
         </nav>
     </div>
-    <a href="/poultry_shop/pages/pos/index.php" class="btn btn-primary btn-sm shadow-sm no-print">
+    <a href="<?= BASE_URL ?>/pages/pos/index.php" class="btn btn-primary btn-sm shadow-sm no-print">
         <i class="fas fa-plus me-1"></i> New Sale
     </a>
 </div>

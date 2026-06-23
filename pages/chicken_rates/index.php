@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $stmt->execute([$id]);
         setFlash('Rate deleted successfully.');
     }
-    header('Location: /poultry_shop/pages/chicken_rates/index.php');
+    header('Location: ' . BASE_URL . '/pages/chicken_rates/index.php');
     exit;
 }
 

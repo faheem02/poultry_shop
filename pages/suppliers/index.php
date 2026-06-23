@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         ]);
         setFlash('Supplier updated successfully.');
     }
-    header('Location: /poultry_shop/pages/suppliers/index.php');
+    header('Location: ' . BASE_URL . '/pages/suppliers/index.php');
     exit;
 }
 
@@ -40,7 +40,7 @@ if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM suppliers WHERE id = ?");
     $stmt->execute([$id]);
     setFlash('Supplier deleted successfully.');
-    header('Location: /poultry_shop/pages/suppliers/index.php');
+    header('Location: ' . BASE_URL . '/pages/suppliers/index.php');
     exit;
 }
 
@@ -51,7 +51,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Suppliers</h1>
-    <a href="/poultry_shop/pages/suppliers/create.php" class="btn btn-primary btn-sm">
+    <a href="<?= BASE_URL ?>/pages/suppliers/create.php" class="btn btn-primary btn-sm">
         <i class="fas fa-plus me-1"></i> Add Supplier
     </a>
 </div>
