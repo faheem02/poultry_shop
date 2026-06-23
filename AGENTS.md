@@ -14,14 +14,14 @@ Vanilla PHP/MySQL POS system. No framework, no build tools, no Composer, no test
 - `index.php` — session check → redirects to `pages/dashboard/index.php` or `login.php`
 - `login.php` — plaintext comparison (`$password === $user['password_hash']`), sets `$_SESSION['user_id'|'user_name'|'user_role'|'last_activity']`
 - `logout.php` — destroys session
-- `auth_check.php` — included at top of every protected page; starts `session_start()`, checks 1-hour timeout, redirects to `login.php` if expired/unauthenticated
+- `includes/auth_check.php` — included at top of every protected page; starts `session_start()`, checks 1-hour timeout (`time() - last_activity > 3600`), redirects to `login.php` or `login.php?expired=1` if expired
 
 ## Architecture
 
 - **No routing.** Each page is a standalone `.php` file including includes in order:
   1. `includes/auth_check.php` — session + auth
   2. `includes/database.php` — `getDB()` (was `config/database.php`)
-  3. `includes/functions.php` — helpers
+  3. `includes/functions.php` — helpers (18 functions)
   4. `includes/header.php` — `<head>`, topbar, flash messages (uses `$page_title`); sidebar loaded via `includes/sidebar.php`
   5. `includes/footer.php` — `</body>`, loads DataTables, SweetAlert2, `sb-admin-custom.js`
 
@@ -42,7 +42,7 @@ Vanilla PHP/MySQL POS system. No framework, no build tools, no Composer, no test
 | `pages/expenses/` | `index.php` | Expense CRUD |
 | `pages/stock/` | `index.php`, `summary.php`, `manage.php` | Stock ledger + summary + adjustments |
 | `pages/chicken_types/` | `index.php` | Chicken type CRUD |
-| `pages/chicken_rates/` | `index.php` | Daily rate management |
+| `pages/chicken_rates/` | `index.php` | Daily rate CRUD per chicken type |
 | `pages/reports/` | 8 files | cash_book, bank_book, daily_sales, expense_report, stock_report, customer_ledger, supplier_ledger |
 
 ## POS flow (`pages/pos/`)
@@ -56,23 +56,24 @@ Vanilla PHP/MySQL POS system. No framework, no build tools, no Composer, no test
 
 | Convention | Details |
 |---|---|
-| **CSRF** | `csrf_token()` / `verify_csrf()` — token in `$_SESSION` |
-| **Flash messages** | `setFlash()` / `flashMessage()` — auto-displayed in `header.php` |
+| **CSRF** | `csrf_token()` / `verify_csrf()` — 64-char hex token in `$_SESSION` |
+| **Flash messages** | `setFlash()` / `flashMessage()` — auto-displayed in `header.php`; auto-dismiss after 4s via `sb-admin-custom.js` |
 | **Role checks** | `isAdmin()` / `isCashier()` — checks `$_SESSION['user_role']` |
-| **Active nav** | `navActive()`, `navActiveDir()`, `isSectionActive()` |
-| **XSS** | `htmlspecialchars()` on all output |
-| **Money** | `money($n)` → 2-decimal string; `moneyRaw($n)` → no thousands separator |
+| **Active nav** | `navActive()` (basename match), `navActiveDir()` (URI segment), `isSectionActive()` (partial URI) |
+| **XSS** | `sanitize()` = `htmlspecialchars(strip_tags(trim()))` on insert/update; `htmlspecialchars()` on all output |
+| **Money** | `money($n)` → 2-decimal with thousands separator; `moneyRaw($n)` → no separator |
 | **DB** | PDO prepared statements throughout |
-| **Invoice no.** | `generate_invoice_no()` → `INV-YYYYMMDD-NNNN` |
+| **Invoice no.** | `generate_invoice_no()` → `INV-YYYYMMDD-NNNN` (auto-increment per day) |
 | **Customer balance** | `getCustomerBalance(id)` = opening_balance + sales - payments |
 | **Supplier balance** | `getSupplierBalance(id)` = opening_balance + purchases - payments |
 | **Available stock** | `availableStock(type_id)` → `{birds, weight}` from stock_ledger |
 | **Today's profit** | `todayProfit()` = revenue - avg purchase cost × weight sold - expenses |
-| **DataTables** | Activated by class `datatable` on `<table>`; no explicit JS init needed |
+| **DataTables** | Activated by class `datatable` on `<table>`; init in `sb-admin-custom.js` with pageLength:25, stateSave:true |
+| **Sidebar toggle** | `#sidebarToggle` / `#sidebarToggleTop` toggles `.sidebar-toggled` on `<body>` — collapses sidebar to 80px icon-only |
 
 ## Dependencies
 
-All frontend via CDN (Bootstrap 5.3.3, jQuery 3.7.1, DataTables 1.13.7, SweetAlert2 11, Chart.js 4.4.1, Font Awesome 6.5.1). SB Admin 2 template vendored in `sb-admin2/`. Custom green theme in `assets/css/sb-admin-custom.css` (`--primary: #059669`). Custom JS in `assets/js/` (`pos.js`, `sb-admin-custom.js`).
+All frontend via CDN (Bootstrap 5.3.3, jQuery 3.7.1, DataTables 1.13.7, SweetAlert2 11, Chart.js 4.4.1, Font Awesome 6.5.1). Custom CSS in `assets/css/sb-admin-custom.css` (`--primary: #059669`). Custom JS in `assets/js/` (`pos.js`, `sb-admin-custom.js`).
 
 `package.json` has `bootstrap ^5.3.8` in `node_modules/` but no build step — not used at runtime.
 
