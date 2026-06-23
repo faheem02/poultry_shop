@@ -6,7 +6,11 @@ define('DB_HOST', 'localhost');
 define('DB_NAME', 'poultry_shop');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('BASE_URL', '/poultry_shop');
+$scriptDir = str_replace('\\', '/', __DIR__);
+$docRoot   = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']);
+$relPath   = rtrim(str_replace($docRoot, '', $scriptDir), '/');
+$baseUrl   = dirname($relPath);
+define('BASE_URL', $baseUrl === '.' || $baseUrl === '/' ? '' : $baseUrl);
 
 function getDB(): PDO {
     static $pdo = null;
