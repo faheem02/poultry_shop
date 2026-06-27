@@ -84,6 +84,8 @@ CREATE TABLE IF NOT EXISTS purchases (
   purchase_rate   DECIMAL(10,2)   NOT NULL DEFAULT 0.00,
   total_cost      DECIMAL(12,2)   NOT NULL DEFAULT 0.00,
   purchase_date   DATE            NOT NULL,
+  farm_name       VARCHAR(100)    DEFAULT NULL,
+  vehicle_no      VARCHAR(50)     DEFAULT NULL,
   notes           TEXT            DEFAULT NULL,
   created_by      INT             DEFAULT NULL,
   created_at      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
@@ -229,5 +231,13 @@ VALUES (1, 700.00, CURDATE(), 1);
 INSERT INTO stock_ledger
   (transaction_date, transaction_type, chicken_type_id, birds_count, weight_kg, rate_per_kg, amount, notes)
 VALUES
-  (CURDATE(), 'opening', 1, 50, 100.000, 500.00, 50000.00, 'Opening stock Broiler'),
+   (CURDATE(), 'opening', 1, 50, 100.000, 500.00, 50000.00, 'Opening stock Broiler'),
   (CURDATE(), 'opening', 2, 30, 45.000, 600.00, 27000.00, 'Opening stock Layer');
+
+-- ===========================================
+-- Migration: Add farm_name and vehicle_no to purchases
+-- ===========================================
+-- If you already ran the schema before these columns were added, run:
+-- ALTER TABLE purchases
+--   ADD COLUMN farm_name  VARCHAR(100) DEFAULT NULL AFTER purchase_date,
+--   ADD COLUMN vehicle_no VARCHAR(50)  DEFAULT NULL AFTER farm_name;

@@ -46,6 +46,8 @@ require_once __DIR__ . '/../../includes/header.php';
                     <tr><td class="fw-bold">Supplier</td><td><?= htmlspecialchars($purchase['supplier_name']) ?></td></tr>
                     <tr><td class="fw-bold">Chicken Type</td><td><span class="badge bg-info"><?= htmlspecialchars($purchase['chicken_type_name'] ?? '-') ?></span></td></tr>
                     <tr><td class="fw-bold">Invoice No.</td><td><?= htmlspecialchars($purchase['invoice_no'] ?? '-') ?></td></tr>
+                    <tr><td class="fw-bold">Farm Name</td><td><?= htmlspecialchars($purchase['farm_name'] ?? '-') ?></td></tr>
+                    <tr><td class="fw-bold">Vehicle No.</td><td><?= htmlspecialchars($purchase['vehicle_no'] ?? '-') ?></td></tr>
                     <tr><td class="fw-bold">Notes</td><td><?= htmlspecialchars($purchase['notes'] ?? '-') ?></td></tr>
                     <tr><td class="fw-bold">Recorded By</td><td><?= htmlspecialchars($purchase['created_by_name'] ?? '-') ?></td></tr>
                 </table>

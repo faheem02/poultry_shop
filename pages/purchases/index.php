@@ -20,6 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $total_weight   = (float)$_POST['total_weight'];
         $purchase_rate  = (float)$_POST['purchase_rate'];
         $purchase_date  = $_POST['purchase_date'] ?: date('Y-m-d');
+        $farm_name      = sanitize($_POST['farm_name'] ?? '');
+        $vehicle_no     = sanitize($_POST['vehicle_no'] ?? '');
         $notes          = sanitize($_POST['notes'] ?? '');
 
         $total_cost = $total_weight * $purchase_rate;
@@ -27,10 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $pdo->beginTransaction();
         try {
             $stmt = $pdo->prepare("
-                INSERT INTO purchases (supplier_id, invoice_no, total_birds, total_weight, purchase_rate, total_cost, purchase_date, notes, created_by)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO purchases (supplier_id, invoice_no, total_birds, total_weight, purchase_rate, total_cost, purchase_date, farm_name, vehicle_no, notes, created_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
-            $stmt->execute([$supplier_id, $invoice_no, $total_birds, $total_weight, $purchase_rate, $total_cost, $purchase_date, $notes, $_SESSION['user_id']]);
+            $stmt->execute([$supplier_id, $invoice_no, $total_birds, $total_weight, $purchase_rate, $total_cost, $purchase_date, $farm_name, $vehicle_no, $notes, $_SESSION['user_id']]);
             $purchase_id = $pdo->lastInsertId();
 
             // Stock ledger entry
@@ -155,7 +157,9 @@ require_once __DIR__ . '/../../includes/header.php';
                         <th>Supplier</th>
                         <th>Chicken</th>
                         <th>Invoice</th>
-                        <th>Birds</th>
+                        <th>Farm</th>
+                        <th>Vehicle</th>
+                        <th>Quantity</th>
                         <th>Weight (KG)</th>
                         <th>Rate/KG</th>
                         <th>Total Cost</th>
@@ -165,7 +169,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 </thead>
                 <tbody>
                     <?php if (empty($purchases)): ?>
-                    <tr><td colspan="10" class="text-center text-muted py-4">No purchases found for the selected period.</td></tr>
+                    <tr><td colspan="12" class="text-center text-muted py-4">No purchases found for the selected period.</td></tr>
                     <?php else: ?>
                     <?php foreach ($purchases as $p): ?>
                     <tr>
@@ -173,6 +177,8 @@ require_once __DIR__ . '/../../includes/header.php';
                         <td class="fw-bold"><?= htmlspecialchars($p['supplier_name']) ?></td>
                         <td><span class="badge bg-info"><?= htmlspecialchars($p['chicken_type_name'] ?? '-') ?></span></td>
                         <td><?= htmlspecialchars($p['invoice_no'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($p['farm_name'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($p['vehicle_no'] ?? '-') ?></td>
                         <td><?= $p['total_birds'] ?></td>
                         <td><?= number_format($p['total_weight'], 2) ?></td>
                         <td>Rs. <?= money($p['purchase_rate']) ?></td>
@@ -231,7 +237,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <input type="text" name="invoice_no" class="form-control" placeholder="Optional">
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label class="form-label">Total Birds</label>
+                        <label class="form-label">Total Quantity</label>
                         <input type="number" name="total_birds" class="form-control" min="0" value="0">
                     </div>
                     <div class="col-md-4 mb-3">
@@ -246,9 +252,17 @@ require_once __DIR__ . '/../../includes/header.php';
                         <label class="form-label">Total Cost (Auto)</label>
                         <input type="text" class="form-control" id="p_total" readonly placeholder="Auto-calculated">
                     </div>
-                    <div class="col-12 mb-3">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Farm Name</label>
+                        <input type="text" name="farm_name" class="form-control" placeholder="e.g. Al-Noor Farm">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Vehicle No.</label>
+                        <input type="text" name="vehicle_no" class="form-control" placeholder="e.g. LEJ-1234">
+                    </div>
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">Notes</label>
-                        <textarea name="notes" class="form-control" rows="2"></textarea>
+                        <textarea name="notes" class="form-control" rows="1"></textarea>
                     </div>
                 </div>
             </div>
