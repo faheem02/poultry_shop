@@ -237,6 +237,9 @@ require_once __DIR__ . '/../../includes/header.php';
                                 <a href="view.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
+                                <a href="edit.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Edit Sale">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 <a href="invoice.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary" target="_blank" data-bs-toggle="tooltip" title="Print Invoice">
                                     <i class="fas fa-print"></i>
                                 </a>

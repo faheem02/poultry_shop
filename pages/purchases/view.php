@@ -31,9 +31,14 @@ require_once __DIR__ . '/../../includes/header.php';
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Purchase Details</h1>
-    <a href="<?= BASE_URL ?>/pages/purchases/index.php" class="btn btn-outline-secondary btn-sm">
-        <i class="fas fa-arrow-left me-1"></i> Back
-    </a>
+    <div>
+        <a href="edit.php?id=<?= $purchase['id'] ?>" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit me-1"></i> Edit
+        </a>
+        <a href="<?= BASE_URL ?>/pages/purchases/index.php" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Back
+        </a>
+    </div>
 </div>
 
 <div class="row">

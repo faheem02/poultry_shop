@@ -70,11 +70,20 @@
         /* Mobile responsive */
         @media (max-width: 768px) {
             .topbar {
-                padding: 0.5rem 1rem;
+                padding: 0.35rem 0.75rem;
             }
             
             .topbar .d-none.d-sm-inline-block {
                 display: none !important;
+            }
+        }
+        @media (max-width: 576px) {
+            .topbar #sidebarToggleTop {
+                padding: 0.25rem;
+                margin-right: 0.5rem !important;
+            }
+            #sidebarToggleTop i {
+                font-size: 1rem;
             }
         }
         
@@ -93,6 +102,7 @@
         
         .topbar.scrolled .topbar-progress {
             transform: scaleX(1);
+        }
 
         /* Center the sidebar toggle button */
 #accordionSidebar .text-center.d-none.d-md-block {
@@ -134,7 +144,7 @@
         <div id="content">
             <!-- Topbar - NOW STICKY -->
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" id="stickyTopbar">
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
+                <button id="sidebarToggleTop" class="btn btn-link rounded-circle me-3">
                     <i class="fa fa-bars"></i>
                 </button>
 

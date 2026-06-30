@@ -7,8 +7,13 @@ $expStock = isSectionActive('stock') ? 'show' : '';
 $collapsed = function($exp) { return $exp ? '' : 'collapsed'; };
 $expanded  = function($exp) { return $exp ? 'true' : 'false'; };
 ?>
+    <!-- Sidebar Backdrop (mobile) -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
     <!-- Sidebar -->
     <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar"><div class="sidebar-inner">
+        <div class="sidebar-close d-md-none" style="display:none;">
+            <button type="button" class="btn-close" id="sidebarCloseBtn" aria-label="Close"></button>
+        </div>
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= BASE_URL ?>/pages/dashboard/index.php">
             <div class="sidebar-brand-icon">
                 <i class="fas fa-drumstick-bite"></i>
@@ -40,13 +45,13 @@ $expanded  = function($exp) { return $exp ? 'true' : 'false'; };
 
         <li class="nav-item <?= navActiveDir('chicken_types') ? 'active' : '' ?>">
             <a class="nav-link" href="<?= BASE_URL ?>/pages/chicken_types/index.php">
-                <i class="fas fa-fw fa-drumstick"></i>
+                <i class="fas fa-fw fa-drumstick-bite"></i>
                 <span>Chicken Types</span>
             </a>
         </li>
         <li class="nav-item <?= navActiveDir('chicken_rates') ? 'active' : '' ?>">
             <a class="nav-link" href="<?= BASE_URL ?>/pages/chicken_rates/index.php">
-                <i class="fas fa-fw fa-tags"></i>
+                <i class="fas fa-fw fa-tag"></i>
                 <span>Chicken Rates</span>
             </a>
         </li>
@@ -57,7 +62,7 @@ $expanded  = function($exp) { return $exp ? 'true' : 'false'; };
                 <i class="fas fa-fw fa-users"></i>
                 <span>Customers</span>
             </a>
-            <div id="collapseCustomers" class="collapse <?= $expCust ?>" data-bs-parent="#accordionSidebar">
+            <div id="collapseCustomers" class="collapse <?= $expCust ?>">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'index.php' && strpos($_SERVER['REQUEST_URI'], '/customers/') ? 'active' : '' ?>" href="<?= BASE_URL ?>/pages/customers/index.php">View Customers</a>
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'ledger.php' && strpos($_SERVER['REQUEST_URI'], '/customers/') ? 'active' : '' ?>" href="<?= BASE_URL ?>/pages/customers/ledger.php">Customer Ledger</a>
@@ -73,7 +78,7 @@ $expanded  = function($exp) { return $exp ? 'true' : 'false'; };
                 <i class="fas fa-fw fa-truck"></i>
                 <span>Suppliers</span>
             </a>
-            <div id="collapseSuppliers" class="collapse <?= $expSupp ?>" data-bs-parent="#accordionSidebar">
+            <div id="collapseSuppliers" class="collapse <?= $expSupp ?>">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'index.php' && strpos($_SERVER['REQUEST_URI'], '/suppliers/') ? 'active' : '' ?>" href="<?= BASE_URL ?>/pages/suppliers/index.php">View Suppliers</a>
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'ledger.php' && strpos($_SERVER['REQUEST_URI'], '/suppliers/') ? 'active' : '' ?>" href="<?= BASE_URL ?>/pages/suppliers/ledger.php">Supplier Ledger</a>
@@ -108,7 +113,7 @@ $expanded  = function($exp) { return $exp ? 'true' : 'false'; };
                 <i class="fas fa-fw fa-warehouse"></i>
                 <span>Stock</span>
             </a>
-            <div id="collapseStock" class="collapse <?= $expStock ?>" data-bs-parent="#accordionSidebar">
+            <div id="collapseStock" class="collapse <?= $expStock ?>">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'summary.php' && strpos($_SERVER['REQUEST_URI'], '/stock/') ? 'active' : '' ?>" href="<?= BASE_URL ?>/pages/stock/summary.php">Stock Summary</a>
                     <a class="collapse-item <?= basename($_SERVER['PHP_SELF']) === 'index.php' && strpos($_SERVER['REQUEST_URI'], '/stock/') ? 'active' : '' ?>" href="<?= BASE_URL ?>/pages/stock/index.php">Stock Ledger</a>
@@ -126,7 +131,7 @@ $expanded  = function($exp) { return $exp ? 'true' : 'false'; };
                 <i class="fas fa-fw fa-book"></i>
                 <span>Cash & Bank</span>
             </a>
-            <div id="collapseFinance" class="collapse <?= $expFin ?>" data-bs-parent="#accordionSidebar">
+            <div id="collapseFinance" class="collapse <?= $expFin ?>">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item <?= strpos($_SERVER['REQUEST_URI'], '/cash_book') !== false ? 'active' : '' ?>" href="<?= BASE_URL ?>/pages/reports/cash_book.php">Cash Book</a>
                     <a class="collapse-item <?= strpos($_SERVER['REQUEST_URI'], '/bank_book') !== false ? 'active' : '' ?>" href="<?= BASE_URL ?>/pages/reports/bank_book.php">Bank Book</a>

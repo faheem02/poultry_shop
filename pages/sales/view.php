@@ -32,6 +32,9 @@ require_once __DIR__ . '/../../includes/header.php';
         <i class="fas fa-file-invoice me-1"></i> <?= htmlspecialchars($sale['invoice_no']) ?>
     </h1>
     <div>
+        <a href="edit.php?id=<?= $sale['id'] ?>" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit me-1"></i> Edit
+        </a>
         <a href="<?= BASE_URL ?>/pages/sales/invoice.php?id=<?= $sale['id'] ?>" class="btn btn-primary btn-sm" target="_blank">
             <i class="fas fa-print me-1"></i> Print Invoice
         </a>

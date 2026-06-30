@@ -1,13 +1,45 @@
 $(document).ready(function () {
 
-    // Sidebar toggle — collapse to icon-only on desktop, slide in/out on mobile
-    $('#sidebarToggle, #sidebarToggleTop').on('click', function () {
+    // Sidebar toggle
+    $('#sidebarToggle, #sidebarToggleTop, #sidebarCloseBtn').on('click', function () {
         $('body').toggleClass('sidebar-toggled');
     });
 
-    // Reset sidebar on desktop resize
+    // Close sidebar when clicking backdrop (mobile)
+    $(document).on('click', '#sidebarBackdrop', function () {
+        $('body').removeClass('sidebar-toggled');
+    });
+
+    // Collapse toggle handler
+    $(document).on('click', '#accordionSidebar .nav-link[data-bs-toggle="collapse"]', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        var target = $(this).data('bs-target');
+        if (!target) return;
+
+        // Desktop icon-only: expand sidebar to show dropdown
+        if ($(window).width() >= 769 && $('body').hasClass('sidebar-toggled')) {
+            $('#accordionSidebar').addClass('sidebar-expanded');
+        }
+
+        // Use Bootstrap Collapse API
+        $(target).collapse('toggle');
+    });
+    $(document).on('mouseleave', '#accordionSidebar', function () {
+        $('#accordionSidebar').removeClass('sidebar-expanded');
+    });
+
+    // Mobile: close sidebar when clicking a direct nav link (not collapse toggle)
+    $(document).on('click', '#accordionSidebar .nav-link', function () {
+        if ($(window).width() < 769 && !$(this).attr('data-bs-toggle')) {
+            $('body').removeClass('sidebar-toggled');
+        }
+    });
+
+    // Ensure sidebar starts at full width on desktop
     $(window).resize(function () {
-        if ($(window).width() >= 768) {
+        if ($(window).width() >= 769) {
             $('body').removeClass('sidebar-toggled');
         }
     }).trigger('resize');
